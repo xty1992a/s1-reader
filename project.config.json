@@ -1,0 +1,17 @@
+{
+  "miniprogramRoot": ".",
+  "projectname": "s1-reader",
+  "description": "",
+  "appid": "wxc68670097dcf684a",
+  "setting": {
+    "urlCheck": false,
+    "checkSiteMap": false,
+    "es6": false,
+    "enhance": false,
+    "compileHotReLoad": false,
+    "postcss": false,
+    "minified": false,
+    "bigPackageSizeSupport": true
+  },
+  "compileType": "miniprogram"
+}

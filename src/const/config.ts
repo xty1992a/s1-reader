@@ -26,24 +26,38 @@ export const tabbarList = tabbarArray.map(it => ({
 }))
 
 export const THEME: theme.ThemeConfig = {
+  // 背景颜色
+  bgColorDarken: '#D1D9C1',
   bgColor:  '#F6F7EB',
-  subBgColor: '#f0f0f0',
+  bgColorLighten:  '#f9f9f9',
+
+  // 字体颜色
+  fontColorDarken: '#000',
   fontColor:  '#333',
-  subFontColor: '#999',
+  fontColorLighten: '#666',
+  fontColorGray: '#999',
+
+  // 边框颜色
   borderColor: '#e5e5e5',
 
+  quoteBorderColor: '#022C80',
+  quoteBgColor: '#f9f9f9',
+
+  // 状态颜色
+  activeColor:  '#022C80',
+  unactiveColor:  '#7d7e80',
+
+  // 字号
   fontSizeExtra:  18,
   fontSizeLarge: 16,
   fontSizeNormal: 14,
   fontSizeSmall: 12,
-  fontSizeMin: 10,
+  fontSizeMini: 10,
 
+  // 边距
   pagePadding: 12,
   cardPadding: 6,
+  cardMarginBottom: 10,
 
-  activeColor:  '#022C80',
-  deactiveColor:  '#999',
-  quoteBgColor:  '#f9f9f9',
-  quoteBorderColor:  '#022C80',
 
 }

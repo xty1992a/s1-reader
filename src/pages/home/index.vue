@@ -69,16 +69,18 @@ definePageConfig({
 .track{
 }
 .card{
-  color: #333;
+  color: var(--font-color, #333);
   border-bottom: 1px solid var(--border-color, #e5e5e5);
-  margin-bottom: 10px;
+  margin-bottom: var(--card-margin-bottom, 10px);
   padding: var(--card-padding) 0;
-  --f-color: var(--font-color, #333);
-  --b-color: var(--border-color, #e5e5e5);
 
   &.read{
-    --b-color: var(--active-color);
-    --f-color: var(--active-color, #022C80);
+    .reply-block{
+      color: var(--active-color, #022C80);
+      .reply-count{
+        border-color: var(--active-color, #022C80);
+      }
+    }
   }
 
   .left{
@@ -88,7 +90,6 @@ definePageConfig({
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    color: var(--f-color, #333);
 
     .reply-count{
       min-width: 40px;
@@ -96,7 +97,7 @@ definePageConfig({
       text-align: center;
       line-height: 1.6;
       border-radius: 2px;
-      border: 1px solid var(--b-color, #e5e5e5);
+      border: 1px solid var(--border-color, #e5e5e5);
       font-size: var(--font-size-min, 10px);
       padding: 0 5px;
     }

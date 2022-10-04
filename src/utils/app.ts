@@ -5,9 +5,3 @@ export function getAppConfig() {
  return component.app
 }
 
-export function getTabbar(): Taro.TabBar {
-  const app = getAppConfig()
-  return app?.config?.tabBar ?? {
-    list: [],
-  }
-}

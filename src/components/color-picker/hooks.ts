@@ -9,7 +9,6 @@ export function useColor(id: string) {
   })
 
   const pickColor = (rgbText: string) => {
-  console.log('pick', rgbText)
    return new Promise<{color: string, success: boolean}>(_resolve => {
      visible.value = true
      color.value = toRgb(rgbText)

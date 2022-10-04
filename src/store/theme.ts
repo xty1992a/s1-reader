@@ -11,20 +11,15 @@ function rpx(value: number) {
   return value * 2 + 'rpx'
 }
 
-export const useTheme = defineStore<'theme', {config: theme.ThemeConfig | null, mode: string}>('theme', {
+export const useTheme = defineStore('theme', {
   state() {
     return {
-      // 驼峰格式
-      config: null,
+      // 驼峰格式的主题色配置
+      config: storage.get('theme.config') || THEME,
       mode: '' // 'dark'
     }
   },
   actions: {
-    setup() {
-      if (this.config) return
-      this.config = THEME
-    },
-
     switchTheme() {
     },
 
@@ -44,12 +39,9 @@ export const useTheme = defineStore<'theme', {config: theme.ThemeConfig | null, 
     },
 
     restore() {
-      const theme = storage.get('theme.config')
-      if (!theme) {
-        this.setup()
-      } else {
-        this.theme = theme
-      }
+      const theme = storage.get('theme.config') || THEME
+      console.log('restore theme', storage.get('theme.config'))
+      this.theme = theme
     }
   },
   getters: {

@@ -166,6 +166,7 @@ useTitleClick(() => {
 });
 
 definePageConfig({
+  navigationBarTitleText: '',
   enablePullDownRefresh: true,
   onReachBottomDistance: 200
 });
@@ -181,46 +182,50 @@ definePageConfig({
 }
 
 .card {
-  color: #333;
-  border: 1px solid #e5e5e5;
+  color: var(--font-color,#333);
+  border: 1px solid var(--border-color, #e5e5e5);
   margin-bottom: 10px;
 
   .people {
     line-height: 32px;
-    font-size: 14px;
-    border-bottom: 1px solid #e5e5e5;
-    padding: 0 6px;
+    font-size: var(--font-size-mini,10px);
+    border-bottom: 1px solid var(--border-color, #e5e5e5);
+    padding: 0 var(--card-padding, 6px);
 
     .index {
-      font-size: 12px;
+      font-weight: 500;
     }
 
     .author-name {
-      font-size: 13px;
+      font-size: var(--font-size-small,12px);
       font-weight: 500;
       margin: 0 5px;
     }
 
     .date-text {
-      font-size: 10px;
     }
   }
 
   .content {
-    padding: 6px;
-    font-size: 14px;
+    padding: var(--card-padding, 6px);
+    font-size: var(--font-size-normal,14px);
     overflow: auto;
 
     .quote {
-      border-left: 3px solid #022C80;
-      background-color: #f9f9f9;
+      border-left: 3px solid var(--quote-border-color, #022c80);
+      background-color: var(--quote-bg-color, #f9f9f9);
       padding: 5px 5px 5px 10px;
+    }
+    .pstatus{
+      text-align: center;
+      font-size: 14px;
+      color: #999;
     }
   }
 }
 
 .author {
-  font-size: 12px;
+  font-size: var(--font-size-small,12px);
   color: #999;
 }
 </style>

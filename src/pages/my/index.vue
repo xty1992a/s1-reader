@@ -86,7 +86,7 @@ definePageConfig({
     box-shadow: 0 0 10px 0 rgba(0,0,0,.08);
     margin-bottom: 20px;
     .nut-cell{
-      background-color: #f9f9f9;
+      background-color: var(--bg-color-lighten, #f9f9f9);
     }
   }
   .user-info{

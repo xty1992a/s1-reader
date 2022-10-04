@@ -26,13 +26,12 @@ export const useTabbar = defineStore('tabbar', {
     setup() {
       const component = Taro.getCurrentInstance()
       const path = (component.router?.path ?? '').replace(/^\//, '')
-      const tabbar = getTabbar()
 
-      const index = tabbar.list.findIndex((it) => it.pagePath === path)
+      const index = tabbarArray.findIndex((it) => it.pagePath === path)
       if (index<0) return
       console.log('current component', component, path, index)
 
-      this.tabbar = tabbar
+      this.tabbar.list = tabbarArray
       this.tabindex =index
     }
   },

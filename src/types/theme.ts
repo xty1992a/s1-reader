@@ -1,18 +1,25 @@
 export interface ThemeConfig {
-  bgColor: string
+  bgColorDarken: string;
+  bgColor: string;
+  bgColorLighten: string;
+  fontColorDarken: string;
+  fontColor: string;
+  fontColorLighten: string;
+  fontColorGray: string;
+  borderColor: string;
+  quoteBorderColor: string;
+  quoteBgColor: string;
+  activeColor: string;
+  unactiveColor: string;
 
-  fontColor: string
-  fontSizeExtra:  number,
-  fontSizeLarge: number,
-  fontSizeNormal: number,
-  fontSizeSmall: number,
-  fontSizeMin: number,
-
-  activeColor: string
-  deactiveColor: string
-
-  quoteBgColor: string
-  quoteBorderColor: string
+  fontSizeExtra: number;
+  fontSizeLarge: number;
+  fontSizeNormal: number;
+  fontSizeSmall: number;
+  fontSizeMini: number;
+  pagePadding: number;
+  cardPadding: number;
+  cardMarginBottom: number;
 
   [p: string]: string | number
 }

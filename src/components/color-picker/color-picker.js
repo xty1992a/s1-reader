@@ -3,13 +3,8 @@ Component({
     initColor: {
       type: String,
       value:'rgb(255,0,0)',
-	  observer(initColor) {
-		console.log('now color',initColor)
-		if (!initColor) return
-		console.log(this.initColor)
-		this.setData({
-		  hueColor: this.hsv2rgb((this.rgb2hsv(initColor)).h,100,100)
-		})
+	  observer() {
+		this.init()
 	  }
     },
     maskClosable: {
@@ -22,7 +17,10 @@ Component({
     },
     show: {
       type: Boolean,
-      value: false
+      value: false,
+	  observer() {
+		this.init()
+	  }
     },
   },
   data: {
@@ -32,32 +30,45 @@ Component({
     attached() {
     },
     ready() {
-
-      const $ = this.createSelectorQuery()
-      const target = $.select('.target')
-      target.boundingClientRect()
-      $.exec((res) => {
-        const rect = res[0]
-        if (rect) {
-          this.SV = {
-            W: rect.width - 28, // block-size=28
-            H: rect.height - 28,
-            Step: (rect.width - 28) / 100
-          }
-          let { h, s, v } = this.rgb2hsv(this.data.initColor)
-          // 初始化定位
-          this.setData({
-            hsv:{
-              h,s,v
-            },
-            x: Math.round(s * this.SV.Step),
-            y: Math.round((100 - v) * this.SV.Step)
-          })
-        }
-      })
     }
   },
   methods: {
+	init() {
+	  this.setColor()
+	  this.setPosition()
+	},
+	setColor() {
+	  const color = this.data.initColor
+	  if (!color) return
+	  this.setData({
+		hueColor: this.hsv2rgb((this.rgb2hsv(color)).h,100,100)
+	  })
+	},
+	setPosition() {
+
+	  const $ = this.createSelectorQuery()
+	  const target = $.select('.target')
+	  target.boundingClientRect()
+	  $.exec((res) => {
+		const rect = res[0]
+		if (rect) {
+		  this.SV = {
+			W: rect.width - 28, // block-size=28
+			H: rect.height - 28,
+			Step: (rect.width - 28) / 100
+		  }
+		  let { h, s, v } = this.rgb2hsv(this.data.initColor)
+		  // 初始化定位
+		  this.setData({
+			hsv:{
+			  h,s,v
+			},
+			x: Math.round(s * this.SV.Step),
+			y: Math.round((100 - v) * this.SV.Step)
+		  })
+		}
+	  })
+	},
     areaTap(res) {
       const $ = this.createSelectorQuery()
       const target = $.select('.target')
@@ -82,7 +93,6 @@ Component({
       })
     },
     onEnd() {
-	  console.log('color', this.data.colorRes)
       this.triggerEvent('color', {
         color: this.data.colorRes
       })
@@ -113,6 +123,11 @@ Component({
         this.triggerEvent('close');
       }
     },
+	confirm() {
+	  this.triggerEvent('change', {
+		color: this.data.colorRes
+	  })
+	},
     preventdefault:function() {
 
     },

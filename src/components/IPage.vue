@@ -1,5 +1,5 @@
 <template>
-  <view class="page" :style="theme.style">
+  <view class="i-page" :style="theme.style">
     <slot></slot>
   </view>
 </template>
@@ -10,12 +10,12 @@ const theme = useTheme()
 </script>
 
 <style lang="less">
-.page{
+.i-page{
   background-color: var(--bg-color, #F6F7EB);
   min-height: 100vh;
-  padding: var(--page-padding, 12px);
+  padding:  var(--page-padding, 12px);
   width: 100vw;
   overflow: hidden;
-  color: var(--font-color, #022C80);
+  color: var(--font-color, #333);
 }
 </style>

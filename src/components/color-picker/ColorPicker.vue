@@ -1,12 +1,13 @@
 <template>
   <i-color
+      v-if="refresh"
       :mask="true"
       :show="visible"
       :init-color="color"
-      @color="getColor"
+      @change="getColor"
       @close="close"
       bindclose
-      bindcolor
+      bindchange
   />
 </template>
 
@@ -19,8 +20,18 @@ const props = defineProps<{id: string}>()
 
 const {visible, color, resolve} = inject(props.id, {visible: false, color: '', resolve(payload: Result) {}})
 
+const refresh = ref(true)
+
+watch([visible], () => {
+  if (visible.value) return
+  refresh.value = false
+  setTimeout(() => {
+    refresh.value = true
+  }, 50)
+
+})
+
 const getColor = (e) => {
-  console.log('picker get color',e)
   resolve.value({success: true, color: toHex(e.detail.color)})
 }
 

@@ -1,17 +1,19 @@
 <template>
   <nut-tabbar
-      v-model:visible="index"
       safe-area-inset-bottom
       class="tabbar"
-      active-color="#022C80"
+      :active-color="config.activeColor"
+      :unactive-color="config.unactiveColor"
+      :style="{background: config.bgColorDarken}"
+      v-model:visible="index"
   >
     <nut-tabbar-item
+        class-prefix="icon"
+        font-class-name="iconfont"
         :tab-title="it.text"
         :icon="it.active ? it.selectedIconPath : it.iconPath"
-        class-prefix="icon"
-        v-for="it in list"
         :key="it.pagePath"
-        font-class-name="iconfont"
+        v-for="it in list"
 
     ></nut-tabbar-item>
   </nut-tabbar>
@@ -20,12 +22,16 @@
 <script>
 import Taro from '@tarojs/taro'
 import {mapStores} from 'pinia';
-import {useTabbar} from '@/store';
+import {useTabbar, useTheme} from '@/store';
 
 export default {
   name: 'custom-tab-bar',
   computed: {
     ...mapStores(useTabbar),
+    ...mapStores(useTheme),
+    config() {
+      return this.theme.config
+    },
     index: {
       get() {
         return this.tabbar.tabindex;
@@ -39,7 +45,6 @@ export default {
     }
   },
   created() {
-    console.log(Taro.getCurrentInstance().page.getTabBar())
     this.tabbar.setup();
   },
   options: {
@@ -51,7 +56,6 @@ export default {
 
 <style lang="less">
 .tabbar{
-  background: #D1D9C1;
   box-sizing: content-box;
 }
 </style>

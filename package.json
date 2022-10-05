@@ -36,6 +36,9 @@
     "Android >= 4.1",
     "ios >= 8"
   ],
+  "pre-commit": [
+    "pretty"
+  ],
   "author": "",
   "license": "MIT",
   "dependencies": {

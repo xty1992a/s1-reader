@@ -18,6 +18,8 @@ export const tabbarArray = [
 
 export const homePath = tabbarArray[0].pagePath;
 export const settingPath = "/subpack/setting/index";
+export const favoritePath = "/subpack/favorite/index";
+export const messagePath = "/subpack/message/index";
 export const postDetailPath = "/subpack/post-detail/index";
 
 export const tabbarList = tabbarArray.map((it) => ({

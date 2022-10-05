@@ -5,7 +5,12 @@ export default defineAppConfig({
   subpackages: [
     {
       root: "subpack",
-      pages: ["post-detail/index", "setting/index"],
+      pages: [
+        "post-detail/index",
+        "favorite/index",
+        "message/index",
+        "setting/index",
+      ],
     },
   ],
   window: {

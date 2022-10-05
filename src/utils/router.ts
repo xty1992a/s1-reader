@@ -1,18 +1,26 @@
 import Taro from "@tarojs/taro";
-import { homePath, postDetailPath, settingPath } from "@/const/config";
+import * as path from "@/const/config";
 
 export function getParams(dft: Record<string, string> = {}) {
   return Taro?.getCurrentInstance()?.router?.params ?? dft;
 }
 
 export function routeToHome() {
-  return Taro.switchTab({ url: homePath });
+  return Taro.switchTab({ url: path.homePath });
 }
 
 export function routeToSetting() {
-  return Taro.navigateTo({ url: settingPath });
+  return Taro.navigateTo({ url: path.settingPath });
+}
+
+export function routeToMessage() {
+  return Taro.navigateTo({ url: path.messagePath });
 }
 
 export function routeToPostDetail(id: string) {
-  return Taro.navigateTo({ url: postDetailPath + "?tid=" + id });
+  return Taro.navigateTo({ url: path.postDetailPath + "?tid=" + id });
+}
+
+export function routeToFavorite(id: string) {
+  return Taro.navigateTo({ url: path.favoritePath });
 }

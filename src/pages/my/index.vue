@@ -46,7 +46,9 @@
       </view>
 
       <nut-cell-group>
-        <nut-cell title="设置" icon="setting" is-link @click="toSetting" />
+        <nut-cell title="设置" icon="setting" is-link @click="routeToSetting" />
+        <nut-cell title="私信" icon="message" is-link @click="routeToMessage" />
+        <nut-cell title="收藏" icon="order" is-link @click="routeToFavorite" />
       </nut-cell-group>
     </view>
   </IPage>
@@ -59,7 +61,7 @@ export default {
 </script>
 <script setup lang="ts">
 import { reactive, ref } from "vue";
-import { delCookie, routeToSetting } from "@/utils";
+import {delCookie, routeToMessage, routeToSetting, routeToFavorite} from "@/utils";
 import { visit } from "@/api";
 import { useUser } from "@/store";
 
@@ -87,8 +89,6 @@ const submit = async () => {
   await user.login(formData);
   user.save();
 };
-
-const toSetting = routeToSetting;
 
 const reset = () => {
   ruleForm.value.reset();

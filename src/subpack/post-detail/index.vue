@@ -2,40 +2,29 @@
   <IPage>
     <view class="post-detail">
       <view class="track">
-        <view v-if="!state.comments.length && state.message" class="message">
-          <view>{{state.message.messagestr}}</view>
+        <view v-if="message" class="message">
+          <view>{{ message }}</view>
         </view>
 
-        <view v-for="(it, index) in state.comments" :key="it.pid" class="card">
-          <view>
-            <view class="people">
-              <text class="index">#{{ index + 1 }}</text>
-              <text class="author-name">{{ it.author }}</text>
-              <text class="date-text">{{ it.dateline }}</text>
-            </view>
-            <view class="content">
-              <rich-text :user-select="state.userSelect" :nodes="it.message"/>
-            </view>
-          </view>
-        </view>
-        <view @click="loadMore">
-          <nut-divider hairline style="padding: 0 20px;border-color: #e5e5e5;color: #999" >
-            <nut-icon name="loading" v-if="state.loading"></nut-icon>
-            <text v-else>没啦</text>
-          </nut-divider>
+        <view v-for="it in state.comments" :key="it.pid">
+          <ICard :data="it"/>
         </view>
       </view>
     </view>
+    <div class="footer safe-area-inset-bottom">
+      <IStepper v-model:current="page" v-model:size="size" :total="total"/>
+    </div>
   </IPage>
 </template>
 
 <script lang="ts">
 export default {
   name: 'PostDetail'
-}
+};
 </script>
 
 <script setup lang="ts">
+//# region 引用、类型
 import {ref, reactive, onMounted, watch, computed,} from 'vue';
 import {getParams, routeToHome} from '@/utils';
 import {useReachBottom, usePullDownRefresh, useTitleClick} from '@tarojs/taro';
@@ -44,67 +33,73 @@ import * as api from '@/api';
 import type {forum} from '@/types';
 import Taro from '@tarojs/taro';
 import {relative, sleep} from "@/utils";
-import uniqBy from 'lodash/uniqBy'
+import uniqBy from 'lodash/uniqBy';
+import IStepper from './IStepper.vue';
+import ICard from './ICard';
 
 interface State {
   comments: forum.PostItem[];
   thread: forum.ThreadDetail | null;
-  message:forum.Message | null
+  message: forum.Message | null;
   query: {
     tid: string
     page: number
+    size: number
   };
-  userSelect: boolean;
   done: boolean;
   loading: boolean;
 }
 
-let pulldown = false
+//# endregion
+
+//# region 数据
+const dftQuery = {
+  tid: '',
+  page: 1,
+  size: 10
+};
+let pulldown = false;
+// 状态
 const state = reactive<State>({
-  userSelect: true,
   comments: [],
-  query: {
-    tid: '',
-    page: 1,
-  },
+  query: dftQuery,
   loading: false,
   done: false,
   message: null,
   thread: null
 });
 
-const reset = (tid = '') => {
-  state.comments = [];
-  state.query = {
-    tid: tid || state.query.tid,
-    page: 1,
-  };
-  state.thread = null;
-  state.done = false;
-};
-
-onMounted(() => {
-  const params = getParams();
-  if (!params.tid) {
-    Taro.showToast({title: '缺少必要参数！', icon: 'none'});
-    routeToHome()
-    return;
+// 衍生计算属性
+const message = computed(() => {
+  if (state.comments.length) return '';
+  return state.message?.messagestr ?? '';
+});
+const query = computed(() => state.query);
+const total = computed(() => Number(state.thread?.replies) ?? 0);
+const page = computed({
+  get: () => state.query.page,
+  set: v => {
+    state.query = ({...state.query, page: v});
   }
-  reset(params.tid);
-
-  // const observer = Taro.createIntersectionObserver(this)
-  console.log(this)
+});
+const size = computed({
+  get: () => state.query.size,
+  set: v => {
+    state.query = ({...state.query, size: v});
+  }
 });
 
-const query = computed(() => state.query);
+//# endregion
 
-const fetchData = async (delay=0) => {
-  state.loading = true
- const res = await api.getPostDetail(state.query, !state.comments.length)
+//# region 加载逻辑
+
+const fetchData = async (delay = 0, concat = true) => {
+  state.loading = true;
+  const res = await api.getPostDetail(state.query, !state.comments.length)
       .finally(() => {
       });
-  await sleep(delay)
-  state.loading = false
+  await sleep(delay);
+  state.loading = false;
   if (!res.success) return;
   if (!state.thread) {
     await Taro.setNavigationBarTitle({
@@ -112,68 +107,105 @@ const fetchData = async (delay=0) => {
     });
   }
   if (res.data.Message) {
-    state.message = res.data.Message
+    state.message = res.data.Message;
   }
   const list = [
-    ...state.comments,
+    ...(concat ? state.comments : []),
     ...res.data.Variables.postlist.map(it => {
+      /*
       if (it.authorid === res.data.Variables.thread.authorid) {
         it.author += '(楼主)';
       }
-
+*/
       return ({
         ...it,
-        message: fmtRichText(it.message, it.attachments),
-        dateline: relative(it.dateline)
+        ishost: it.authorid === res.data.Variables.thread.authorid
+        // message: fmtRichText(it.message, it.attachments),
+        // dateline: relative(it.dateline)
       });
     })
-  ]
+  ];
   state.comments = uniqBy(list, 'pid');
   state.thread = res.data.Variables.thread;
   state.done = Number(res.data.Variables.thread.replies) + 1 === state.comments.length;
 
   if (pulldown) {
-    pulldown = false
+    pulldown = false;
     Taro.stopPullDownRefresh();
   }
-}
+};
+//# endregion
 
-const loadMore = () => {
-  fetchData(300)
-}
+//# region 回调（命令）
+
+const reset = (tid = '') => {
+  state.comments = [];
+  state.query = {...dftQuery, tid: tid || state.query.tid};
+  state.thread = null;
+  state.done = false;
+};
+
+const next = () => {
+  page.value += 1;
+};
+//# endregion
 
 watch(query, () => {
-  fetchData()
+  console.log('should fetch');
+  fetchData(0, false);
 });
 
+//# region 生命周期、事件
+/*
 useReachBottom(() => {
   if (state.done) return console.log('done');
+  next()
+});
+*/
 
-  state.query = {
-    ...state.query,
-    page: state.query.page + 1
-  };
+onMounted(() => {
+  const params = getParams();
+  if (!params.tid) {
+    Taro.showToast({title: '缺少必要参数！', icon: 'none'});
+    routeToHome();
+    return;
+  }
+  reset(params.tid);
 });
 
 usePullDownRefresh(async () => {
-  pulldown = true
+  pulldown = true;
   reset();
 });
+//# endregion
 
-useTitleClick(() => {
-  console.log('title click');
-  Taro.pageScrollTo({offsetTop: 0, duration: 100});
-});
-
+//# region 页面定义
 definePageConfig({
   navigationBarTitleText: '',
   enablePullDownRefresh: true,
   onReachBottomDistance: 200
 });
+//# endregion
+
 </script>
 
 <style lang="less">
-.message{
+.post-detail {
+  padding-bottom: 50px;
+}
+
+.footer {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  height: 50px;
+  box-sizing: content-box;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.08);
+  background-color: var(--bg-color-darken, #D1D9C1);
+}
+
+.message {
   text-align: center;
   padding-top: 10vh;
 }
@@ -181,51 +213,10 @@ definePageConfig({
 .track {
 }
 
-.card {
-  color: var(--font-color,#333);
-  border: 1px solid var(--border-color, #e5e5e5);
-  margin-bottom: 10px;
-
-  .people {
-    line-height: 32px;
-    font-size: var(--font-size-mini,10px);
-    border-bottom: 1px solid var(--border-color, #e5e5e5);
-    padding: 0 var(--card-padding, 6px);
-
-    .index {
-      font-weight: 500;
-    }
-
-    .author-name {
-      font-size: var(--font-size-small,12px);
-      font-weight: 500;
-      margin: 0 5px;
-    }
-
-    .date-text {
-    }
-  }
-
-  .content {
-    padding: var(--card-padding, 6px);
-    font-size: var(--font-size-normal,14px);
-    overflow: auto;
-
-    .quote {
-      border-left: 3px solid var(--quote-border-color, #022c80);
-      background-color: var(--quote-bg-color, #f9f9f9);
-      padding: 5px 5px 5px 10px;
-    }
-    .pstatus{
-      text-align: center;
-      font-size: 14px;
-      color: #999;
-    }
-  }
-}
 
 .author {
-  font-size: var(--font-size-small,12px);
+  font-size: var(--font-size-small, 12px);
   color: #999;
 }
+
 </style>

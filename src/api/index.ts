@@ -73,13 +73,15 @@ interface GetPostDetailResponse {
   }
   Message?: forum.Message
 }
-export const getPostDetail = (request: {page: number | string, tid: string}, loading=true) => get<GetPostDetailResponse>('/2b/api/mobile/index.php', {
+export const getPostDetail = (request: {page: number | string, tid: string, size?: number}, loading=true) => get<GetPostDetailResponse>('/2b/api/mobile/index.php', {
   // mobile=no&module=viewthread&page=1&ppp=30&submodule=checkpost&tid=2097772&version=1
   mobile: 'no',
   module: 'viewthread',
   submodule: 'checkpost',
   version: "1",
-  ...request
+  page: request.page,
+  tid: request.tid,
+  ppp: request.size
 }, {loading})
 
 

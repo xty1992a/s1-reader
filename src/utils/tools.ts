@@ -1,7 +1,7 @@
 import Taro from '@tarojs/taro';
 import tinycolor from 'tinycolor2'
 export const sleep = time => new Promise(resolve => setTimeout(resolve, time));
-
+export const limit = (min: number, max: number) => value => Math.max(Math.min(max, value), min);
 // 不能有的
 const excludes = [/^max-age=/i, /^path=/i, /^expires=/i];
 // 必须有的

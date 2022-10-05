@@ -34,7 +34,12 @@ const config = {
 	enable: false // Webpack 持久化缓存配置，建议开启。默认配置请参考：https://docs.taro.zone/docs/config-detail#cache
   },
   sass: {
-	data: `@import "@nutui/nutui-taro/dist/styles/variables.scss";`
+	resource: [
+		root('src/assets/css/custom_theme.scss')
+	  // path.resolve(__dirname, '..', 'src/assets/styles/custom_theme.scss')
+	],
+	// data: `@import "@nutui/nutui-taro/dist/styles/variables.scss";`
+	data: `@import "@/assets/css/custom_theme.scss";@import "@nutui/nutui-taro/dist/styles/variables.scss";`
   },
   mini: {
 	webpackChain(chain) {

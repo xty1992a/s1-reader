@@ -1,6 +1,6 @@
 export interface ForumOption {
-  name: string,
-  fid: string
+  name: string;
+  fid: string;
 }
 
 export interface ThreadItem {
@@ -22,8 +22,10 @@ export interface ThreadItem {
   read: boolean;
 }
 
-export type DisplayThreadItem = Pick<ThreadItem, 'tid' | 'read' | 'subject' | 'author' | 'replies' | 'newreplies'>
-
+export type DisplayThreadItem = Pick<
+  ThreadItem,
+  "tid" | "read" | "subject" | "author" | "replies" | "newreplies"
+>;
 
 export interface ForumItem {
   fid: string | number;

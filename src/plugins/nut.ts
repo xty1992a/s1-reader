@@ -23,7 +23,9 @@ import {
   Popup,
   OverLay,
   Radio,
-  RadioGroup, Checkbox, CheckboxGroup,
+  RadioGroup,
+  Checkbox,
+  CheckboxGroup,
 } from "@nutui/nutui-taro";
 import local from "./local";
 const list = [
@@ -52,7 +54,7 @@ const list = [
   Radio,
   RadioGroup,
   Checkbox,
-  CheckboxGroup
+  CheckboxGroup,
 ];
 function useNut(app: App) {
   list.forEach((comp) => app.use(comp));

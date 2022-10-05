@@ -1,9 +1,5 @@
 <template>
-  <view
-      class="card"
-      @click="toDetail(data.tid)"
-      :class="{ read: data.read }"
-  >
+  <view class="card" @click="toDetail(data.tid)" :class="{ read: data.read }">
     <nut-row type="flex" align="center">
       <nut-col span="20">
         <view class="left">
@@ -15,7 +11,7 @@
         <view class="reply-block">
           <text class="reply-count">{{ data.replies }}</text>
           <text class="new-reply" v-if="data.newreplies"
-          >+{{ data.newreplies }}</text
+            >+{{ data.newreplies }}</text
           >
         </view>
       </nut-col>
@@ -24,18 +20,17 @@
 </template>
 
 <script lang="ts" setup>
-defineProps<{data: forum.DisplayThreadItem}>()
+defineProps<{ data: forum.DisplayThreadItem }>();
 
-import {forum} from '@/types'
-import {routeToPostDetail} from "@/utils";
-import {useThread} from "@/store";
+import { forum } from "@/types";
+import { routeToPostDetail } from "@/utils";
+import { useThread } from "@/store";
 const thread = useThread();
 
 const toDetail = (id: string) => {
   thread.read(id);
   routeToPostDetail(id);
 };
-
 </script>
 
 <style lang="less">

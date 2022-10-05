@@ -1,6 +1,6 @@
 import Taro from "@tarojs/taro";
 import * as path from "@/const/config";
-import {forumPath} from "@/const/config";
+import { forumPath } from "@/const/config";
 
 export function getParams(dft: Record<string, string> = {}) {
   return Taro?.getCurrentInstance()?.router?.params ?? dft;

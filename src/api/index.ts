@@ -1,6 +1,6 @@
-import {get, request} from "./request";
-import type {forum, message} from "@/types";
-import {parseForumHtml} from '@/utils/html'
+import { get, request } from "./request";
+import type { forum, message } from "@/types";
+import { parseForumHtml } from "@/utils/html";
 import qs from "qs";
 
 interface GetTreadListRequest {
@@ -34,19 +34,20 @@ interface GetThreadListResponse {
   Message?: forum.Message;
 }
 
-export const getThreadList = (request: GetTreadListRequest) => get<GetThreadListResponse>(
-  "/2b/api/mobile/index.php",
-  {
-    ...request,
-    tpp: request.size || 10,
-    mobile: "no",
-    module: "forumdisplay",
-    orderby: "dblastpost",
-    submodule: "checkpost",
-    version: "1",
-  },
-  {loading: false}
-);
+export const getThreadList = (request: GetTreadListRequest) =>
+  get<GetThreadListResponse>(
+    "/2b/api/mobile/index.php",
+    {
+      ...request,
+      tpp: request.size || 10,
+      mobile: "no",
+      module: "forumdisplay",
+      orderby: "dblastpost",
+      submodule: "checkpost",
+      version: "1",
+    },
+    { loading: false }
+  );
 
 interface GetPostDetailResponse {
   Variables: {
@@ -84,7 +85,7 @@ export const getPostDetail = (
       tid: request.tid,
       ppp: request.size,
     },
-    {loading}
+    { loading }
   ).then((res) => {
     if (
       res.success &&
@@ -148,40 +149,47 @@ export const visit = () =>
 
 interface GetMessageListResponse {
   Variables: {
-    list: message.MessageItem[]
-  }
+    list: message.MessageItem[];
+  };
 }
 
-export const getMessageList = (request: {page: number}) => get<GetMessageListResponse>('/2b/api/mobile/index.php', {
-  // module=mypm&version=1&page=1&mobile=no
-  module: 'mypm',
-  version: '1',
-  page :request.page,
-  mobile: 'no',
-});
+export const getMessageList = (request: { page: number }) =>
+  get<GetMessageListResponse>("/2b/api/mobile/index.php", {
+    // module=mypm&version=1&page=1&mobile=no
+    module: "mypm",
+    version: "1",
+    page: request.page,
+    mobile: "no",
+  });
 
 interface GetFavoriteListResponse {
   Variables: {
-    list: forum.FavPost[]
-  }
+    list: forum.FavPost[];
+  };
 }
-export const getFavoriteList = (request: {page: number}) => get<GetFavoriteListResponse>('/2b/api/mobile/index.php', {
-  // ?module=myfavthread&version=1&page=1&mobile=no
-  module: 'myfavthread',
-  version: '1',
-  page: request.page,
-  mobile: 'no',
-})
+export const getFavoriteList = (request: { page: number }) =>
+  get<GetFavoriteListResponse>("/2b/api/mobile/index.php", {
+    // ?module=myfavthread&version=1&page=1&mobile=no
+    module: "myfavthread",
+    version: "1",
+    page: request.page,
+    mobile: "no",
+  });
 
-export const getForumList = () => get<forum.ForumOption[]>('/2b/forum.php', {
-    forumlist:1,
-    mobile:2
-}, {
-  isSuccess: _ => true,
-  toast: false
-}).then(res => {
-  if (res.success && typeof res.data === 'string') {
-    res.data = parseForumHtml(res.data)
-  }
-  return res
-})
+export const getForumList = () =>
+  get<forum.ForumOption[]>(
+    "/2b/forum.php",
+    {
+      forumlist: 1,
+      mobile: 2,
+    },
+    {
+      isSuccess: (_) => true,
+      toast: false,
+    }
+  ).then((res) => {
+    if (res.success && typeof res.data === "string") {
+      res.data = parseForumHtml(res.data);
+    }
+    return res;
+  });

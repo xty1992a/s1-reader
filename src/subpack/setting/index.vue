@@ -1,7 +1,7 @@
 <template>
   <IPage>
     <view class="setting-page">
-      <view class="form">
+      <view class="form" v-if="formData">
         <nut-form :model-value="formData" ref="ruleForm">
 
           <nut-collapse v-model:active="activeModule" icon="down-arrow" :accordion="true">
@@ -60,14 +60,9 @@
           </nut-collapse>
         </nut-form>
 
-        <nut-row class="btn-wrap" :gutter="10">
-          <nut-col span="12">
-            <nut-button shape="square" type="info" @click="save" size="normal">保存</nut-button>
-          </nut-col>
-          <nut-col span="12">
-            <nut-button shape="square" @click="reset" size="normal">重置</nut-button>
-          </nut-col>
-        </nut-row>
+        <view class="btn-wrap">
+          <nut-button shape="square" @click="reset" size="normal">重置</nut-button>
+        </view>
       </view>
       <ColorPicker id="setting"/>
     </view>
@@ -80,10 +75,9 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import {reactive, ref, onMounted} from "vue";
+import {reactive, ref, onBeforeMount, computed, watch} from "vue";
 import {useTheme} from "@/store";
 import {theme} from '@/types';
-import {THEME} from "@/const/config";
 import ColorPicker from '@/components/color-picker/ColorPicker.vue';
 import IColor from './IColor';
 import {useColor} from '@/components/color-picker/hooks';
@@ -93,39 +87,25 @@ const themeStore = useTheme();
 const [pickColor] = useColor('setting');
 
 const ruleForm = ref(null);
-const formData = reactive<theme.ThemeConfig>(JSON.parse(JSON.stringify(THEME)));
+const formData = computed(() => themeStore.config);
+
+watch(formData, () => {
+  themeStore.save()
+}, {deep: true})
 
 const pickColorBy = async (prop: keyof theme.ThemeConfig) => {
-  const color = formData[prop];
+  const color = formData.value[prop];
   if ((typeof color) !== 'string') return;
   const res = await pickColor(color as string);
   if (!res.success) return;
-  formData[prop] = res.color;
-};
-
-const sync = () => {
-  Object.entries(themeStore.config || {})
-      .forEach(([k, v]) => {
-        formData[k] = v;
-      });
-};
-
-onMounted(() => {
-  console.log('active')
-  sync();
-});
-
-const save = () => {
-  themeStore.set(formData);
-  themeStore.save()
+  formData.value[prop] = res.color;
 };
 
 const reset = () => {
   themeStore.reset();
-  sync();
 };
 
-const activeModule = ref('color');
+const activeModule = ref('');
 
 </script>
 
@@ -134,6 +114,7 @@ const activeModule = ref('color');
   .nut-collapse-item {
     .collapse-item {
       padding: 13px 36px 13px 16px;
+      //background-color: var(--bg-color-lighten, #f9f9f9);
     }
 
     .collapse-wrapper .collapse-content {
@@ -162,6 +143,11 @@ const activeModule = ref('color');
   .btn-wrap {
     button {
       width: 100%;
+      font-size: 14px;
+      border: 0;
+      border-radius: 6px;
+      background: var(--bg-color-darken);
+      color: var(--active-color)
     }
   }
 }

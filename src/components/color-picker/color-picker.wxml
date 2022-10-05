@@ -15,6 +15,8 @@
       <movable-area class="target" style="background-color:{{hueColor}}"> <view class="white-mask"></view> <view class="black-mask"></view> <movable-view direction="all" bindchange="changeSV" x="{{x}}" y="{{y}}" animation="{{false}}" class="iconfont icon-ios-locate-outline" bindtouchend="onEnd"></movable-view> </movable-area>
       <slider bindchanging="changeHue" bindchange="changeHue" activeColor="transparent" backgroundColor="transparent" class="ribbon" max="360" value="{{hsv.h}}" block-color="{{colorRes}}" bindtouchend="onEnd" />
 
-      <button bindtap="confirm" class="confirm-btn">确认</button>
+      <view class="color-footer">
+        <button bindtap="confirm" class="confirm-btn">确认</button>
+      </view>
   </view>
 </view>

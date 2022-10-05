@@ -181,3 +181,12 @@
   mask-size: 100%;
   background-color: currentColor;
 }
+
+.color-footer{
+  padding: 0 75rpx 20px;
+}
+.confirm-btn{
+  font-size: 14px;
+  background: var(--bg-color-darken);
+  color: var(--active-color)
+}

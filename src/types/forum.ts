@@ -44,6 +44,8 @@ export interface PostItem {
   "memberstatus": string;
   "number": string;
   "dbdateline": string;
+  // 是否是楼主(前端补充)
+  ishost: boolean
 }
 
 export interface ThreadDetail {

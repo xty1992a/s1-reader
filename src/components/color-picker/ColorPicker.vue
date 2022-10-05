@@ -24,10 +24,12 @@ const refresh = ref(true)
 
 watch([visible], () => {
   if (visible.value) return
-  refresh.value = false
   setTimeout(() => {
-    refresh.value = true
-  }, 50)
+    refresh.value = false
+    setTimeout(() => {
+      refresh.value = true
+    }, 50)
+  }, 300)
 
 })
 

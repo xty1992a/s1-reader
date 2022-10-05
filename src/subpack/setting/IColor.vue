@@ -8,7 +8,7 @@
 
 <script setup lang="ts">
  defineProps(['modelValue'])
- defineEmits(['update:modelValue'])
+ defineEmits(['update:modelValue', 'click'])
 </script>
 
 <style lang="less">

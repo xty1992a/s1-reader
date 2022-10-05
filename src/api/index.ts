@@ -83,6 +83,14 @@ export const getPostDetail = (request: {page: number | string, tid: string, size
   tid: request.tid,
   ppp: request.size
 }, {loading})
+  .then(res => {
+    if (res.success && res.data?.Variables?.postlist?.length && res.data?.Variables?.thread?.authorid) {
+      res.data.Variables.postlist.forEach(it => {
+        it.ishost = it.authorid === res.data.Variables.thread.authorid
+      })
+    }
+    return res
+  })
 
 
 interface LoginRequest {

@@ -1,6 +1,6 @@
 import {defineStore} from 'pinia'
 import {theme} from '@/types'
-import {cases, storage} from '@/utils'
+import {cases, storage, copy} from '@/utils'
 import {THEME} from "@/const/config";
 
 function toCssVarName(name: string) {
@@ -15,7 +15,7 @@ export const useTheme = defineStore('theme', {
   state() {
     return {
       // 驼峰格式的主题色配置
-      config: storage.get('theme.config') || THEME,
+      config: storage.get('theme.config'),
       mode: '' // 'dark'
     }
   },
@@ -23,25 +23,30 @@ export const useTheme = defineStore('theme', {
     switchTheme() {
     },
 
-    set(config: Partial<theme.ThemeConfig>) {
+    set(config: Partial<theme.ThemeConfig>, save=true) {
+      console.log('set', save)
       this.config = {
         ...this.config,
         ...config,
       }
+
+      save && this.save()
     },
 
     reset() {
-      this.config = THEME
+      console.log('reset')
+      this.config = copy(THEME)
     },
 
     save() {
+      console.log('save')
       storage.set('theme.config', this.config)
     },
 
     restore() {
-      const theme = storage.get('theme.config') || THEME
-      console.log('restore theme', storage.get('theme.config'))
-      this.theme = theme
+      const theme = storage.get('theme.config') || copy(THEME)
+      console.log('restore theme', storage.get('theme.config'), theme)
+      this.config = theme
     }
   },
   getters: {

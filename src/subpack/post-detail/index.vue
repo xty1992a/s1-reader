@@ -25,17 +25,17 @@ export default {
 
 <script setup lang="ts">
 //# region 引用、类型
-import {ref, reactive, onMounted, watch, computed,} from 'vue';
+import {ref, reactive, onMounted, onUnmounted, watch, computed, nextTick,} from 'vue';
 import {getParams, routeToHome} from '@/utils';
 import {useReachBottom, usePullDownRefresh, useTitleClick} from '@tarojs/taro';
-import {fmtRichText} from '@/utils/richtext';
 import * as api from '@/api';
 import type {forum} from '@/types';
 import Taro from '@tarojs/taro';
-import {relative, sleep} from "@/utils";
+import {storage, sleep} from "@/utils";
 import uniqBy from 'lodash/uniqBy';
 import IStepper from './IStepper.vue';
 import ICard from './ICard';
+import {useScrollEnd} from "@/utils/hooks/useScrollEnd";
 
 interface State {
   comments: forum.PostItem[];
@@ -56,9 +56,13 @@ interface State {
 const dftQuery = {
   tid: '',
   page: 1,
-  size: 10
+  size: 30
 };
 let pulldown = false;
+let scrollTop = 0;
+let restore = function () {
+};
+
 // 状态
 const state = reactive<State>({
   comments: [],
@@ -79,6 +83,7 @@ const total = computed(() => Number(state.thread?.replies) ?? 0);
 const page = computed({
   get: () => state.query.page,
   set: v => {
+    backTop();
     state.query = ({...state.query, page: v});
   }
 });
@@ -96,8 +101,6 @@ const size = computed({
 const fetchData = async (delay = 0, concat = true) => {
   state.loading = true;
   const res = await api.getPostDetail(state.query, !state.comments.length)
-      .finally(() => {
-      });
   await sleep(delay);
   state.loading = false;
   if (!res.success) return;
@@ -111,19 +114,7 @@ const fetchData = async (delay = 0, concat = true) => {
   }
   const list = [
     ...(concat ? state.comments : []),
-    ...res.data.Variables.postlist.map(it => {
-      /*
-      if (it.authorid === res.data.Variables.thread.authorid) {
-        it.author += '(楼主)';
-      }
-*/
-      return ({
-        ...it,
-        ishost: it.authorid === res.data.Variables.thread.authorid
-        // message: fmtRichText(it.message, it.attachments),
-        // dateline: relative(it.dateline)
-      });
-    })
+    ...res.data.Variables.postlist
   ];
   state.comments = uniqBy(list, 'pid');
   state.thread = res.data.Variables.thread;
@@ -133,14 +124,19 @@ const fetchData = async (delay = 0, concat = true) => {
     pulldown = false;
     Taro.stopPullDownRefresh();
   }
+  restore && restore();
 };
 //# endregion
 
 //# region 回调（命令）
 
-const reset = (tid = '') => {
+const backTop = () => {
+  return Taro.pageScrollTo({scrollTop: 0, duration: 0});
+};
+
+const reset = ({tid = '', page = 1}) => {
   state.comments = [];
-  state.query = {...dftQuery, tid: tid || state.query.tid};
+  state.query = {...dftQuery, tid: tid || state.query.tid, page};
   state.thread = null;
   state.done = false;
 };
@@ -148,10 +144,36 @@ const reset = (tid = '') => {
 const next = () => {
   page.value += 1;
 };
+
+/**
+ * 当前阅读快照，页码、页数、高度、
+ * */
+const snapshot = () => {
+  const readsnap = {
+    query: query.value,
+    scrollTop,
+  };
+  storage.set(`readsnap:${query.value.tid}`, readsnap);
+};
+
+/**
+ * 恢复快照
+ * */
+const remember = (tid: string) => {
+  const key = `readsnap:${tid}`;
+  const readsnap = storage.get(key);
+  if (!readsnap) return;
+  state.query = readsnap.query;
+  restore = async function () {
+    restore = () => {
+    };
+    await sleep(50);
+    await Taro.pageScrollTo({scrollTop: readsnap.scrollTop || 0, duration: 0});
+  };
+};
 //# endregion
 
 watch(query, () => {
-  console.log('should fetch');
   fetchData(0, false);
 });
 
@@ -164,21 +186,30 @@ useReachBottom(() => {
 */
 
 onMounted(() => {
+  scrollTop = 0;
   const params = getParams();
   if (!params.tid) {
     Taro.showToast({title: '缺少必要参数！', icon: 'none'});
     routeToHome();
     return;
   }
-  reset(params.tid);
+  reset({tid: params.tid});
+  remember(params.tid);
 });
 
 usePullDownRefresh(async () => {
   pulldown = true;
-  reset();
+  reset({page: query.value.page});
 });
 //# endregion
 
+useScrollEnd((pos) => {
+  scrollTop = pos.scrollTop;
+  snapshot();
+});
+onUnmounted(() => {
+  snapshot();
+})
 //# region 页面定义
 definePageConfig({
   navigationBarTitleText: '',

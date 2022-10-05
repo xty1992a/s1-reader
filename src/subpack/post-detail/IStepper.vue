@@ -9,14 +9,14 @@
       <p class="pagging-btn" @click="pick('current')">{{props.current}}/{{pages}}</p>
       <p class="pagging-btn" @click="pick('size')">{{props.size}}</p>
     </div>
-    <div></div>
+<!--    <div></div>-->
   </div>
   <nut-picker
       style="height: 200px"
       v-model:visible="state.visible"
       :columns="columns"
-      :value="vValue"
-      title="城市选择"
+      v-model="vValue"
+      :title="title"
       @confirm="confirm"
   >
   </nut-picker>
@@ -39,12 +39,13 @@ const emits = defineEmits(['update:current', "update:size"])
 
 const state = reactive({
   visible: false,
+  refresh: true,
   pickType: ''
 })
 const pages = computed(() => {
   if (!props.total) return 0
   if (!props.size) return 0
-  return Math.round(props.total / props.size)
+  return Math.ceil(props.total / props.size)
 })
 const canLeft = computed(() => props.current <= 1)
 const canRight = computed(() => props.current >= pages.value)
@@ -54,12 +55,12 @@ const pageOptions = computed(() => {
   return [...Array(pages.value)]
   .fill(0)
   .map((_,i) => ({
-    text: i + 1,
+    text: `第 ${i + 1} 页`,
     value: i + 1
   }))
 })
 
-const sizeOptions = [10,20,30,40].map(n => ({text: n, value: n}))
+const sizeOptions = [10,20,30,40].map(n => ({text: `每页 ${n} 条`, value: n}))
 
 const columns = computed(() => {
   const list = ({
@@ -70,21 +71,34 @@ const columns = computed(() => {
   return list
 })
 
-const vValue = computed(() => {
-  switch (state.pickType) {
-    case 'current':
-      return props.current
-    case 'size':
-      return props.size
-    default:
-      return 0
+const vValue = computed({
+  get: () => {
+    switch (state.pickType) {
+      case 'current':
+        return [props.current]
+      case 'size':
+        return [props.size]
+      default:
+        return []
+    }
+  },
+  set: v=>{
+    console.log(v)
   }
 })
-const step = (delta: number) => {
-  const value = props.current + delta
+const title = computed(() => {
+  return ({
+    'current': '选择页码',
+    'size': '选择每页数量'
+  })[state.pickType]
+})
+const updateCurrent = (value: number) => {
   const limitFn = limit(1, pages.value)
-  console.log(limitFn(value))
   emits('update:current', limitFn(value))
+}
+
+const step = (delta: number) => {
+  updateCurrent(props.current + delta)
 }
 
 const pick = (type) => {
@@ -97,12 +111,14 @@ const confirm = ({selectedValue: [value]}) => {
   console.log(value)
   switch (state.pickType){
     case 'current':
-      emits('update:current', value)
+      updateCurrent(value)
       break
     case 'size':
       emits('update:size', value)
+      updateCurrent(1)
       break
   }
+  state.pickType = ''
 }
 
 </script>
@@ -115,6 +131,9 @@ const confirm = ({selectedValue: [value]}) => {
     height: 200px !important;
   }
 
+  .nut-picker__bar{
+    background-color: var(--bg-color-darken, #D1D9C1);
+  }
   .i-stepper-view{
     height: 100%;
     display: flex;
@@ -140,21 +159,23 @@ const confirm = ({selectedValue: [value]}) => {
     }
     &.disabled{
       pointer-events: none;
-      opacity: .6;
+      opacity: .4;
     }
   }
 
   .stepping-btn{
-    width: 30px;
+    width: 40px;
+    line-height: 50px;
     display: inline-block;
     vertical-align: middle;
+    margin-right: 10px;
    .btn-like;
   }
 
   .pagging-btn{
     padding: 0 15px;
-    margin: 0 5px;
-    background-color: var(--bg-color-lighten, #f9f9f9);
+    margin-left: 10px;
+    background-color: var(--bg-color, #F6F7EB);
     .btn-like;
   }
 }

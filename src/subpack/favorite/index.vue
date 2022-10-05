@@ -1,7 +1,6 @@
 <template>
   <IPage>
   <div class="page-favorite">
-    <p>收藏</p>
     <div class="track">
       <div v-for="it in displayList" :key="it.tid">
         <PostCard :data="it"/>

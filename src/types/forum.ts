@@ -1,3 +1,8 @@
+export interface ForumOption {
+  name: string,
+  fid: string
+}
+
 export interface ThreadItem {
   tid: string;
   readperm: string;
@@ -138,18 +143,18 @@ export interface Attachment {
 }
 
 export interface FavPost {
-  favid:  string; // "2510656",
-  uid:  string; // "246801",
-  id:  string; // "2098160",
-  idtype:  string; // "tid",
-  spaceuid:  string; // "0",
-  title:  string; // "魔都以后插混没得玩了吧",
-  description:  string; // "",
-  dateline:  string; // "1664967214",
-  icon:  string; // "<img src=\"static/image/feed/thread.gif\" alt=\"thread\" class=\"t\" /> ",
-  url:  string; // "forum.php?mod=viewthread&tid=2098160",
-  replies:  string; // "75",
-  author:  string; // "普通军转"
+  favid: string; // "2510656",
+  uid: string; // "246801",
+  id: string; // "2098160",
+  idtype: string; // "tid",
+  spaceuid: string; // "0",
+  title: string; // "魔都以后插混没得玩了吧",
+  description: string; // "",
+  dateline: string; // "1664967214",
+  icon: string; // "<img src=\"static/image/feed/thread.gif\" alt=\"thread\" class=\"t\" /> ",
+  url: string; // "forum.php?mod=viewthread&tid=2098160",
+  replies: string; // "75",
+  author: string; // "普通军转"
 }
 
 export interface Message {

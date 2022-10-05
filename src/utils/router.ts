@@ -1,5 +1,6 @@
 import Taro from "@tarojs/taro";
 import * as path from "@/const/config";
+import {forumPath} from "@/const/config";
 
 export function getParams(dft: Record<string, string> = {}) {
   return Taro?.getCurrentInstance()?.router?.params ?? dft;
@@ -19,6 +20,10 @@ export function routeToMessage() {
 
 export function routeToPostDetail(id: string) {
   return Taro.navigateTo({ url: path.postDetailPath + "?tid=" + id });
+}
+
+export function routeToForum(id: string) {
+  return Taro.navigateTo({ url: path.forumPath });
 }
 
 export function routeToFavorite(id: string) {

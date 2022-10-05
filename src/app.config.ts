@@ -9,6 +9,7 @@ export default defineAppConfig({
         "post-detail/index",
         "favorite/index",
         "message/index",
+        "forum/index",
         "setting/index",
       ],
     },

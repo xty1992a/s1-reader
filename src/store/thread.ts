@@ -32,6 +32,7 @@ export const useThread = defineStore("thread", {
     fid: "",
     threadMap: new Map<string, Cache>(),
     readmap: new Map<string, { replies: number }>(),
+    forumList: [{"name":"VTB虚拟偶像","fid":"151"}] as forum.ForumOption[]
   }),
   actions: {
     setFid(fid: string) {
@@ -40,6 +41,30 @@ export const useThread = defineStore("thread", {
         this.reset(fid);
       }
     },
+    setForum(list: forum.ForumOption[]) {
+      this.forumList = list
+      storage.set('forumlist', list)
+    },
+    addForum(option: forum.ForumOption) {
+      this.setForum([...this.forumList, option])
+    },
+    delForum(option: forum.ForumOption) {
+      this.setForum(this.forumList.filter(it => it.fid !== option.fid))
+    },
+    swapForum(source: number, target: number) {
+      const list = [...this.forumList]
+      let temp = list.splice(source, 1);
+      let start = list.splice(0, target);
+      this.setForum([...start, ...temp, ...list]);
+    },
+    stepForum(option: forum.ForumOption, delta: number) {
+      const index = this.forumList.findIndex(it => it.fid === option.fid)
+      if (index<0) return
+      const target = index + delta
+      if (target<0||target>this.forumList.length - 1) return;
+      this.swapForum(index, target)
+    },
+
     async next() {
       const current = this.threadMap.get(this.fid);
       if (!current) return console.log("no current");
@@ -94,8 +119,13 @@ export const useThread = defineStore("thread", {
     },
     restore() {
       const map = storage.get("readmap");
-      if (!map) return;
-      this.readmap = map;
+      const forumList = storage.get('forumlist')
+      if (map) {
+        this.readmap = map;
+      }
+      if (forumList) {
+        this.forumList = forumList
+      }
     },
   },
   getters: {

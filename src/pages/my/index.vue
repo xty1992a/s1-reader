@@ -49,6 +49,7 @@
         <nut-cell title="设置" icon="setting" is-link @click="routeToSetting" />
         <nut-cell title="私信" icon="message" is-link @click="routeToMessage" />
         <nut-cell title="收藏" icon="order" is-link @click="routeToFavorite" />
+        <nut-cell title="版块" icon="order" is-link @click="routeToForum" />
       </nut-cell-group>
     </view>
   </IPage>
@@ -61,7 +62,7 @@ export default {
 </script>
 <script setup lang="ts">
 import { reactive, ref } from "vue";
-import {delCookie, routeToMessage, routeToSetting, routeToFavorite} from "@/utils";
+import {delCookie, routeToMessage, routeToSetting, routeToFavorite, routeToForum} from "@/utils";
 import { visit } from "@/api";
 import { useUser } from "@/store";
 

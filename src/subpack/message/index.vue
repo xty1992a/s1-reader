@@ -1,7 +1,7 @@
 <template>
   <IPage>
     <div class="page-message">
-      <div class="message-item" v-for="it in state.list" :key="it.pmid">
+      <div class="message-item" v-for="it in list" :key="it.pmid">
         <nut-row>
           <nut-col span="12">
             <p class="people-name">{{it.tousername}}</p>
@@ -23,40 +23,17 @@ export default {
 </script>
 
 <script setup lang="ts">
-import {message} from '@/types'
-import {computed, onMounted, reactive, watch} from 'vue';
+import { onMounted, watch} from 'vue';
 import Taro, {useReachBottom} from '@tarojs/taro'
-import {getMessageList} from "@/api";
+import { getMessageList} from "@/api";
 import {relative} from '@/utils'
+import {usePagging} from "@/utils/hooks/usePagging";
 
-const state = reactive({
-  query: {
-    page: 1
-  },
-  list: [] as message.MessageItem[]
+const {query, page, fetch, list} = usePagging({
+  fetch: getMessageList
 })
 
-const page = computed({
-  get: () => state.query.page,
-  set: v => {
-    state.query = {
-      ...state.query,
-      page: v
-    }
-  }
-})
-const query = computed(() => state.query)
-
-const fetch = async () => {
-  getMessageList({page: state.query.page})
-  .then(res => {
-    console.log(res)
-    if (!res.success) return
-    state.list = res.data.Variables.list
-  })
-}
-
-watch(state.query, () => {
+watch(query, () => {
   fetch()
 })
 

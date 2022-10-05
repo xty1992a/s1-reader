@@ -1,5 +1,6 @@
 import {get, request} from "./request";
 import type {forum, message} from "@/types";
+import {parseForumHtml} from '@/utils/html'
 import qs from "qs";
 
 interface GetTreadListRequest {
@@ -170,4 +171,17 @@ export const getFavoriteList = (request: {page: number}) => get<GetFavoriteListR
   version: '1',
   page: request.page,
   mobile: 'no',
+})
+
+export const getForumList = () => get<forum.ForumOption[]>('/2b/forum.php', {
+    forumlist:1,
+    mobile:2
+}, {
+  isSuccess: _ => true,
+  toast: false
+}).then(res => {
+  if (res.success && typeof res.data === 'string') {
+    res.data = parseForumHtml(res.data)
+  }
+  return res
 })

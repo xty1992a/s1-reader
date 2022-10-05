@@ -7,44 +7,56 @@
         </view>
 
         <view v-for="it in state.comments" :key="it.pid">
-          <ICard :data="it"/>
+          <ICard :data="it" />
         </view>
       </view>
     </view>
     <div class="footer safe-area-inset-bottom">
-      <IStepper v-model:current="page" v-model:size="size" :total="total"/>
+      <IStepper v-model:current="page" v-model:size="size" :total="total" />
     </div>
   </IPage>
 </template>
 
 <script lang="ts">
 export default {
-  name: 'PostDetail'
+  name: "PostDetail",
 };
 </script>
 
 <script setup lang="ts">
 //# region 引用、类型
-import {ref, reactive, onMounted, onUnmounted, watch, computed, nextTick,} from 'vue';
-import {getParams, routeToHome} from '@/utils';
-import {useReachBottom, usePullDownRefresh, useTitleClick} from '@tarojs/taro';
-import * as api from '@/api';
-import type {forum} from '@/types';
-import Taro from '@tarojs/taro';
-import {storage, sleep} from "@/utils";
-import uniqBy from 'lodash/uniqBy';
-import IStepper from './IStepper.vue';
-import ICard from './ICard';
-import {useScrollEnd} from "@/utils/hooks/useScrollEnd";
+import {
+  ref,
+  reactive,
+  onMounted,
+  onUnmounted,
+  watch,
+  computed,
+  nextTick,
+} from "vue";
+import { getParams, routeToHome } from "@/utils";
+import {
+  useReachBottom,
+  usePullDownRefresh,
+  useTitleClick,
+} from "@tarojs/taro";
+import * as api from "@/api";
+import type { forum } from "@/types";
+import Taro from "@tarojs/taro";
+import { storage, sleep } from "@/utils";
+import uniqBy from "lodash/uniqBy";
+import IStepper from "./IStepper.vue";
+import ICard from "./ICard";
+import { useScrollEnd } from "@/utils/hooks/useScrollEnd";
 
 interface State {
   comments: forum.PostItem[];
   thread: forum.ThreadDetail | null;
   message: forum.Message | null;
   query: {
-    tid: string
-    page: number
-    size: number
+    tid: string;
+    page: number;
+    size: number;
   };
   done: boolean;
   loading: boolean;
@@ -54,14 +66,13 @@ interface State {
 
 //# region 数据
 const dftQuery = {
-  tid: '',
+  tid: "",
   page: 1,
-  size: 30
+  size: 30,
 };
 let pulldown = false;
 let scrollTop = 0;
-let restore = function () {
-};
+let restore = function () {};
 
 // 状态
 const state = reactive<State>({
@@ -70,28 +81,28 @@ const state = reactive<State>({
   loading: false,
   done: false,
   message: null,
-  thread: null
+  thread: null,
 });
 
 // 衍生计算属性
 const message = computed(() => {
-  if (state.comments.length) return '';
-  return state.message?.messagestr ?? '';
+  if (state.comments.length) return "";
+  return state.message?.messagestr ?? "";
 });
 const query = computed(() => state.query);
 const total = computed(() => Number(state.thread?.replies) ?? 0);
 const page = computed({
   get: () => state.query.page,
-  set: v => {
+  set: (v) => {
     backTop();
-    state.query = ({...state.query, page: v});
-  }
+    state.query = { ...state.query, page: v };
+  },
 });
 const size = computed({
   get: () => state.query.size,
-  set: v => {
-    state.query = ({...state.query, size: v});
-  }
+  set: (v) => {
+    state.query = { ...state.query, size: v };
+  },
 });
 
 //# endregion
@@ -100,13 +111,13 @@ const size = computed({
 
 const fetchData = async (delay = 0, concat = true) => {
   state.loading = true;
-  const res = await api.getPostDetail(state.query, !state.comments.length)
+  const res = await api.getPostDetail(state.query, !state.comments.length);
   await sleep(delay);
   state.loading = false;
   if (!res.success) return;
   if (!state.thread) {
     await Taro.setNavigationBarTitle({
-      title: res.data.Variables.thread.subject
+      title: res.data.Variables.thread.subject,
     });
   }
   if (res.data.Message) {
@@ -114,11 +125,12 @@ const fetchData = async (delay = 0, concat = true) => {
   }
   const list = [
     ...(concat ? state.comments : []),
-    ...res.data.Variables.postlist
+    ...res.data.Variables.postlist,
   ];
-  state.comments = uniqBy(list, 'pid');
+  state.comments = uniqBy(list, "pid");
   state.thread = res.data.Variables.thread;
-  state.done = Number(res.data.Variables.thread.replies) + 1 === state.comments.length;
+  state.done =
+    Number(res.data.Variables.thread.replies) + 1 === state.comments.length;
 
   if (pulldown) {
     pulldown = false;
@@ -131,12 +143,12 @@ const fetchData = async (delay = 0, concat = true) => {
 //# region 回调（命令）
 
 const backTop = () => {
-  return Taro.pageScrollTo({scrollTop: 0, duration: 0});
+  return Taro.pageScrollTo({ scrollTop: 0, duration: 0 });
 };
 
-const reset = ({tid = '', page = 1}) => {
+const reset = ({ tid = "", page = 1 }) => {
   state.comments = [];
-  state.query = {...dftQuery, tid: tid || state.query.tid, page};
+  state.query = { ...dftQuery, tid: tid || state.query.tid, page };
   state.thread = null;
   state.done = false;
 };
@@ -165,10 +177,12 @@ const remember = (tid: string) => {
   if (!readsnap) return;
   state.query = readsnap.query;
   restore = async function () {
-    restore = () => {
-    };
+    restore = () => {};
     await sleep(50);
-    await Taro.pageScrollTo({scrollTop: readsnap.scrollTop || 0, duration: 0});
+    await Taro.pageScrollTo({
+      scrollTop: readsnap.scrollTop || 0,
+      duration: 0,
+    });
   };
 };
 //# endregion
@@ -189,17 +203,17 @@ onMounted(() => {
   scrollTop = 0;
   const params = getParams();
   if (!params.tid) {
-    Taro.showToast({title: '缺少必要参数！', icon: 'none'});
+    Taro.showToast({ title: "缺少必要参数！", icon: "none" });
     routeToHome();
     return;
   }
-  reset({tid: params.tid});
+  reset({ tid: params.tid });
   remember(params.tid);
 });
 
 usePullDownRefresh(async () => {
   pulldown = true;
-  reset({page: query.value.page});
+  reset({ page: query.value.page });
 });
 //# endregion
 
@@ -209,15 +223,14 @@ useScrollEnd((pos) => {
 });
 onUnmounted(() => {
   snapshot();
-})
+});
 //# region 页面定义
 definePageConfig({
-  navigationBarTitleText: '',
+  navigationBarTitleText: "",
   enablePullDownRefresh: true,
-  onReachBottomDistance: 200
+  onReachBottomDistance: 200,
 });
 //# endregion
-
 </script>
 
 <style lang="less">
@@ -233,7 +246,7 @@ definePageConfig({
   height: 50px;
   box-sizing: content-box;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.08);
-  background-color: var(--bg-color-darken, #D1D9C1);
+  background-color: var(--bg-color-darken, #d1d9c1);
 }
 
 .message {
@@ -244,10 +257,8 @@ definePageConfig({
 .track {
 }
 
-
 .author {
   font-size: var(--font-size-small, 12px);
   color: #999;
 }
-
 </style>

@@ -7,37 +7,36 @@
         <text class="date-text">{{ displayData.datetime }}</text>
       </view>
       <view class="content">
-        <rich-text :user-select="hackBol" :nodes="displayData.message"/>
+        <rich-text :user-select="hackBol" :nodes="displayData.message" />
       </view>
     </view>
   </view>
 </template>
 
 <script lang="ts" setup>
-import {forum} from '@/types';
-import {computed, ref} from "vue";
-import {fmtRichText, relative} from "@/utils";
+import { forum } from "@/types";
+import { computed, ref } from "vue";
+import { fmtRichText, relative } from "@/utils";
 
 const props = defineProps<{
-  data: forum.PostItem & { ishost: boolean }
+  data: forum.PostItem & { ishost: boolean };
 }>();
 
 const hackBol = ref(true);
 const displayData = computed(() => {
   const data = props.data;
   if (!data) return null;
-  let message = fmtRichText(data.message, data.attachments)
-  if (data.message.includes('[attach]') && !data.attachments) {
-    message += `<p class="unauth-notice">你尚未登录，无法查看附件</p>`
+  let message = fmtRichText(data.message, data.attachments);
+  if (data.message.includes("[attach]") && !data.attachments) {
+    message += `<p class="unauth-notice">你尚未登录，无法查看附件</p>`;
   }
   return {
     number: `#${data.number}`,
     message,
     datetime: relative(data.dateline),
-    username: `${data.username}${data.ishost ? '（楼主）' : ''}`,
+    username: `${data.username}${data.ishost ? "（楼主）" : ""}`,
   };
 });
-
 </script>
 
 <style lang="less">
@@ -84,5 +83,4 @@ const displayData = computed(() => {
     }
   }
 }
-
 </style>

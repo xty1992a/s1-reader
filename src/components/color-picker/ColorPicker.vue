@@ -1,49 +1,52 @@
 <template>
   <i-color
-      v-if="refresh"
-      :mask="true"
-      :show="visible"
-      :init-color="color"
-      @change="getColor"
-      @close="close"
-      bindclose
-      bindchange
+    v-if="refresh"
+    :mask="true"
+    :show="visible"
+    :init-color="color"
+    @change="getColor"
+    @close="close"
+    bindclose
+    bindchange
   />
 </template>
 
 <script setup lang="ts">
-import {inject, ref, watch} from "vue";
-import {toHex} from "@/utils";
-interface Result {color: string, success: boolean}
+import { inject, ref, watch } from "vue";
+import { toHex } from "@/utils";
+interface Result {
+  color: string;
+  success: boolean;
+}
 
-const props = defineProps<{id: string}>()
+const props = defineProps<{ id: string }>();
 
-const {visible, color, resolve} = inject(props.id, {visible: false, color: '', resolve(payload: Result) {}})
+const { visible, color, resolve } = inject(props.id, {
+  visible: false,
+  color: "",
+  resolve(payload: Result) {},
+});
 
-const refresh = ref(true)
+const refresh = ref(true);
 
 watch([visible], () => {
-  if (visible.value) return
+  if (visible.value) return;
   setTimeout(() => {
-    refresh.value = false
+    refresh.value = false;
     setTimeout(() => {
-      refresh.value = true
-    }, 50)
-  }, 300)
-
-})
+      refresh.value = true;
+    }, 50);
+  }, 300);
+});
 
 const getColor = (e) => {
-  resolve.value({success: true, color: toHex(e.detail.color)})
-}
+  resolve.value({ success: true, color: toHex(e.detail.color) });
+};
 
 const close = () => {
-  console.log('close', color)
-  resolve.value({success: false, color: toHex(color.value)})
-}
-
+  console.log("close", color);
+  resolve.value({ success: false, color: toHex(color.value) });
+};
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

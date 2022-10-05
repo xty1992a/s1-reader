@@ -1,31 +1,29 @@
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
-import nut from './plugins/nut'
-import * as store from './store'
+import { createApp } from "vue";
+import { createPinia } from "pinia";
+import nut from "./plugins/nut";
+import * as store from "./store";
 
-import './app.less'
+import "./app.less";
 
 const App = createApp({
-  onLaunch () {
-    store.useTheme().restore()
-    store.useThread().restore()
-    store.useUser().restore()
+  onLaunch() {
+    store.useTheme().restore();
+    store.useThread().restore();
+    store.useUser().restore();
   },
 
   unmounted() {
-    store.useThread().save()
-    store.useUser().save()
-    store.useTheme().save()
-    console.log('hide')
-  }
+    store.useThread().save();
+    store.useUser().save();
+    store.useTheme().save();
+    console.log("hide");
+  },
   // 入口组件不需要实现 render 方法，即使实现了也会被 taro 所覆盖
-})
+});
 
 function setupApp() {
-  App
-    .use(createPinia())
-    .use(nut)
+  App.use(createPinia()).use(nut);
 }
-setupApp()
+setupApp();
 
-export default App
+export default App;

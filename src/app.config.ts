@@ -1,32 +1,26 @@
-import {tabbarList} from "./const/config";
+import { tabbarList } from "./const/config";
 
 export default defineAppConfig({
-  pages: [
-    'pages/home/index',
-    'pages/my/index',
-  ],
+  pages: ["pages/home/index", "pages/my/index"],
   subpackages: [
     {
-      root: 'subpack',
-      pages: [
-        'post-detail/index',
-        'setting/index',
-      ]
-    }
+      root: "subpack",
+      pages: ["post-detail/index", "setting/index"],
+    },
   ],
   window: {
-    backgroundTextStyle: 'light',
-    navigationBarBackgroundColor: '#F6F7EB',
-    navigationBarTitleText: 'WeChat',
-    navigationBarTextStyle: 'black',
-    backgroundColor: '#F6F7EB',
+    backgroundTextStyle: "light",
+    navigationBarBackgroundColor: "#F6F7EB",
+    navigationBarTitleText: "WeChat",
+    navigationBarTextStyle: "black",
+    backgroundColor: "#F6F7EB",
   },
   tabBar: {
-    backgroundColor: '#ffd5db',
+    backgroundColor: "#ffd5db",
     custom: true,
-    list: tabbarList
+    list: tabbarList,
   },
   usingComponents: {
-    'i-color': '@/components/color-picker/color-picker'
+    "i-color": "@/components/color-picker/color-picker",
   },
-})
+});

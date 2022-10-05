@@ -1,16 +1,15 @@
 <template>
   <view
-      class="color-picker"
-      :style="{'--color': modelValue}"
-      @click="$emit('click')"
-  >{{ modelValue }}</view>
+    class="color-picker"
+    :style="{ '--color': modelValue }"
+    @click="$emit('click')"
+    >{{ modelValue }}</view
+  >
 </template>
 
 <script setup lang="ts">
- defineProps(['modelValue'])
- defineEmits(['update:modelValue', 'click'])
+defineProps(["modelValue"]);
+defineEmits(["update:modelValue", "click"]);
 </script>
 
-<style lang="less">
-
-</style>
+<style lang="less"></style>

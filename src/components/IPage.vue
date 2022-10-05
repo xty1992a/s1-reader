@@ -5,15 +5,15 @@
 </template>
 
 <script lang="ts" setup>
-import {useTheme} from '@/store'
-const theme = useTheme()
+import { useTheme } from "@/store";
+const theme = useTheme();
 </script>
 
 <style lang="less">
-.i-page{
-  background-color: var(--bg-color, #F6F7EB);
+.i-page {
+  background-color: var(--bg-color, #f6f7eb);
   min-height: 100vh;
-  padding:  var(--page-padding, 12px);
+  padding: var(--page-padding, 12px);
   width: 100vw;
   overflow: hidden;
   color: var(--font-color, #333);

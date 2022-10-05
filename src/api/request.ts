@@ -1,7 +1,7 @@
 import Taro from "@tarojs/taro";
 import type { api } from "@/types";
-import {baseUrl} from "@/const/config";
-import {setCookie, getCookie} from "@/utils";
+import { baseUrl } from "@/const/config";
+import { setCookie, getCookie } from "@/utils";
 
 const dftConfig: api.Config = {
   loading: true,
@@ -9,24 +9,24 @@ const dftConfig: api.Config = {
   isSuccess: (_) => true,
   fmtData: (res) => res.data,
   message: (_) => {
-    try{
-      return _?.data.Message?.messagestr
-    }catch (e) {
-      return '解析失败！'
+    try {
+      return _?.data.Message?.messagestr;
+    } catch (e) {
+      return "解析失败！";
     }
   },
 };
 
 const dftOption: api.Option = {
-  method: 'GET',
-}
+  method: "GET",
+};
 
 export function request<T = any>(
   url: string,
   option: api.Option,
   config: Partial<api.Config> = {}
 ) {
-  const opt = {...dftOption, ...option}
+  const opt = { ...dftOption, ...option };
   const cfg = { ...dftConfig, ...config };
 
   const toast = (message: string) => {
@@ -50,8 +50,8 @@ export function request<T = any>(
         const success = cfg.isSuccess(res);
         const data = cfg.fmtData(res);
         const message = cfg.message(res);
-        if (res.header['Set-Cookie']) {
-          setCookie(res.header['Set-Cookie'])
+        if (res.header["Set-Cookie"]) {
+          setCookie(res.header["Set-Cookie"]);
         }
 
         if (!success) {
@@ -71,7 +71,13 @@ export function request<T = any>(
   });
 }
 
-export const get = <T>(url: string, params: Record<string, any>, config: Partial<api.Config> ={}) =>
-  request<T>(url, { params, method: "GET" }, config);
-export const post = <T>(url: string, data: Record<string, any>, config: Partial<api.Config> ={}) =>
-  request<T>(url, { data, method: "POST" }, config);
+export const get = <T>(
+  url: string,
+  params: Record<string, any>,
+  config: Partial<api.Config> = {}
+) => request<T>(url, { params, method: "GET" }, config);
+export const post = <T>(
+  url: string,
+  data: Record<string, any>,
+  config: Partial<api.Config> = {}
+) => request<T>(url, { data, method: "POST" }, config);

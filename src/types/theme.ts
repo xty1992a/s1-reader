@@ -21,5 +21,5 @@ export interface ThemeConfig {
   cardPadding: number;
   cardMarginBottom: number;
 
-  [p: string]: string | number
+  [p: string]: string | number;
 }

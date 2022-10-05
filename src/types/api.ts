@@ -2,14 +2,14 @@ export interface ResultOk<T> {
   success: true;
   data: T;
   message: string;
-  origin: any
+  origin: any;
 }
 
 export interface ResultFail {
   success: false;
   data: any;
   message: string;
-  origin: any
+  origin: any;
 }
 
 export type Result<T> = ResultOk<T> | ResultFail;

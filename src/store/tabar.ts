@@ -1,50 +1,50 @@
-import {defineStore} from "pinia";
+import { defineStore } from "pinia";
 import Taro from "@tarojs/taro";
-import {getTabbar} from "@/utils";
-import {tabbarArray} from "@/const/config";
+import { getTabbar } from "@/utils";
+import { tabbarArray } from "@/const/config";
 
-export const useTabbar = defineStore('tabbar', {
+export const useTabbar = defineStore("tabbar", {
   state: () => {
     return {
       tabindex: 0,
       tabbar: {
-        list: []
-      }
+        list: [],
+      },
     } as {
-      tabindex: number,
-      tabbar: Taro.TabBar
-    }
+      tabindex: number;
+      tabbar: Taro.TabBar;
+    };
   },
   actions: {
     setIndex(index: number) {
-      this.tabindex= index
-      const item = this.list[index]
+      this.tabindex = index;
+      const item = this.list[index];
       Taro.switchTab({
-        url: '/' + item.pagePath
-      })
+        url: "/" + item.pagePath,
+      });
     },
     setup() {
-      const component = Taro.getCurrentInstance()
-      const path = (component.router?.path ?? '').replace(/^\//, '')
+      const component = Taro.getCurrentInstance();
+      const path = (component.router?.path ?? "").replace(/^\//, "");
 
-      const index = tabbarArray.findIndex((it) => it.pagePath === path)
-      if (index<0) return
-      console.log('current component', component, path, index)
+      const index = tabbarArray.findIndex((it) => it.pagePath === path);
+      if (index < 0) return;
+      console.log("current component", component, path, index);
 
-      this.tabbar.list = tabbarArray
-      this.tabindex =index
-    }
+      this.tabbar.list = tabbarArray;
+      this.tabindex = index;
+    },
   },
   getters: {
     list: (state) => {
       return state.tabbar.list.map((it: Taro.TabBarItem, index) => {
-        const item = tabbarArray.find(i => i.pagePath === it.pagePath)
+        const item = tabbarArray.find((i) => i.pagePath === it.pagePath);
 
         return {
           ...item,
           active: index === state.tabindex,
-        }
-      })
+        };
+      });
     },
-  }
-})
+  },
+});

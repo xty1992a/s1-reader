@@ -3,6 +3,8 @@ import { defineStore } from "pinia";
 import type { forum } from "@/types";
 import * as api from "@/api";
 import { storage } from "@/utils";
+import sortBy from 'lodash/sortBy'
+import {useSystem} from './system'
 
 interface Thread {
   fid: string;
@@ -27,11 +29,25 @@ interface Cache {
   };
 }
 
+type ReadCache = {date: number, thread: forum.ThreadItem}
+
+function ensureMapCount(map: Map<string, {date: number}>, count: number) {
+  if (map.size <= count) return map
+  const all = sortBy(Array.from(map.entries()), ([_,a]) => 1 - a.date)
+  const dels = all.splice(count, map.size - count)
+  dels.forEach(([k, v]) => {
+    // @ts-ignore
+    console.log('移除', v?.thread?.subject!)
+    map.delete(k)
+  })
+  return map
+}
+
 export const useThread = defineStore("thread", {
   state: () => ({
     fid: "",
     threadMap: new Map<string, Cache>(),
-    readmap: new Map<string, { replies: number }>(),
+    readmap: new Map<string, ReadCache>(),
     forumList: [{ name: "VTB虚拟偶像", fid: "151" }] as forum.ForumOption[],
   }),
   actions: {
@@ -104,21 +120,23 @@ export const useThread = defineStore("thread", {
     },
 
     read(tid: string) {
+      const system = useSystem()
       const item = this.list.find((it) => it.tid === tid);
       if (!item) return console.log("no item", tid);
       console.log("now thread replies", item.replies);
-      const read = this.readmap.get(tid) || {
-        replies: item.replies,
-      };
-      read.replies = item.replies;
+      const read: ReadCache = this.readmap.get(tid) || {thread: item};
+      read.thread.replies = item.replies;
+      read.date = Date.now()
       this.readmap.set(tid, read);
+      ensureMapCount(this.readmap, system.config.readCount)
       this.save();
     },
+
     save() {
-      storage.set("readmap", this.readmap);
+      storage.set("readmap.v2", this.readmap);
     },
     restore() {
-      const map = storage.get("readmap");
+      const map = storage.get("readmap.v2");
       const forumList = storage.get("forumlist");
       if (map) {
         this.readmap = map;
@@ -131,13 +149,18 @@ export const useThread = defineStore("thread", {
   getters: {
     list: (state) =>
       (state.threadMap.get(state.fid)?.list ?? []).map((item) => {
-        const read = state.readmap.get(item.tid);
+        const thread = state.readmap.get(item.tid)?.thread;
         return {
           ...item,
-          read: Boolean(read),
-          newreplies: read ? Number(item.replies) - Number(read.replies) : 0,
+          read: Boolean(thread),
+          newreplies: thread ? Number(item.replies) - Number(thread.replies) : 0,
         };
       }),
     query: (state) => state.threadMap.get(state.fid)?.query ?? { page: 1 },
+    readList: state => {
+      const system = useSystem()
+      const list = Array.from(state.readmap.values())
+      return sortBy(list, a => 1 - a.date).slice(0, system.config.readCount)
+    }
   },
 });

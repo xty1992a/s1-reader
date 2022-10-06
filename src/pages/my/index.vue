@@ -50,6 +50,7 @@
         <nut-cell title="私信" icon="message" is-link @click="routeToMessage" />
         <nut-cell title="收藏" icon="star" is-link @click="routeToFavorite" />
         <nut-cell title="版块" icon="order" is-link @click="routeToForum" />
+        <nut-cell title="在看" icon="order" is-link @click="routeToHistory" />
       </nut-cell-group>
     </view>
   </IPage>
@@ -68,6 +69,7 @@ import {
   routeToSetting,
   routeToFavorite,
   routeToForum,
+  routeToHistory,
 } from "@/utils";
 import { visit } from "@/api";
 import { useUser } from "@/store";

@@ -1,6 +1,6 @@
-import { get, request } from "./request";
+import { get, request, post } from "./request";
 import type { forum, message } from "@/types";
-import { parseForumHtml } from "@/utils/html";
+import {exactMessage, parseForumHtml} from "@/utils/html";
 import qs from "qs";
 
 interface GetTreadListRequest {
@@ -150,6 +150,7 @@ export const visit = () =>
 interface GetMessageListResponse {
   Variables: {
     list: message.MessageItem[];
+    count: string
   };
 }
 
@@ -165,6 +166,7 @@ export const getMessageList = (request: { page: number }) =>
 interface GetFavoriteListResponse {
   Variables: {
     list: forum.FavPost[];
+    count: string
   };
 }
 export const getFavoriteList = (request: { page: number }) =>
@@ -193,3 +195,26 @@ export const getForumList = () =>
     }
     return res;
   });
+
+/**
+ * 收藏帖子
+ * */
+export const addFavoriteThread = (body: {tid: string, formhash: string}) => request(`/2b/home.php`, {
+  method: 'POST',
+  params: {
+    mod:'spacecp',
+    ac:'favorite',
+    type:'thread',
+    id: body.tid,
+    mobile:'2',
+    handlekey:'favbtn',
+    formhash: body.formhash,
+    inajax:'1',
+  },
+  headers: {
+    "content-type": "application/x-www-form-urlencoded",
+  },
+}, {
+  isSuccess: res => res.data.includes('信息收藏成功'),
+  message: res => exactMessage(res.data )
+})

@@ -12,7 +12,12 @@
       </view>
     </view>
     <div class="footer safe-area-inset-bottom">
-      <IStepper v-model:current="page" v-model:size="size" :total="total" />
+      <IStepper v-model:current="page" v-model:size="size" :total="total" >
+        <template #right>
+          <nut-icon class="favorite" name="star" @click="addFavorite"/>
+        </template>
+
+      </IStepper>
     </div>
   </IPage>
 </template>
@@ -48,11 +53,13 @@ import uniqBy from "lodash/uniqBy";
 import IStepper from "./IStepper.vue";
 import ICard from "./ICard";
 import { useScrollEnd } from "@/utils/hooks/useScrollEnd";
+import {addFavoriteThread} from "@/api";
 
 interface State {
   comments: forum.PostItem[];
   thread: forum.ThreadDetail | null;
   message: forum.Message | null;
+  formhash: string
   query: {
     tid: string;
     page: number;
@@ -77,6 +84,7 @@ let restore = function () {};
 // 状态
 const state = reactive<State>({
   comments: [],
+  formhash: '',
   query: dftQuery,
   loading: false,
   done: false,
@@ -123,6 +131,7 @@ const fetchData = async (delay = 0, concat = true) => {
   if (res.data.Message) {
     state.message = res.data.Message;
   }
+  state.formhash = res.data?.Variables?.formhash ?? ''
   const list = [
     ...(concat ? state.comments : []),
     ...res.data.Variables.postlist,
@@ -142,6 +151,14 @@ const fetchData = async (delay = 0, concat = true) => {
 
 //# region 回调（命令）
 
+const addFavorite = async () => {
+  if (!state.thread?.tid) return console.log('no tid')
+  if (!state.formhash) return console.log('no fromhash');
+  const {tid} = state.thread
+  const res = await addFavoriteThread({tid, formhash: state.formhash})
+  if (!res.success) return
+  Taro.showToast({title: res.message})
+}
 const backTop = () => {
   return Taro.pageScrollTo({ scrollTop: 0, duration: 0 });
 };

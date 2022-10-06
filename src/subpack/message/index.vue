@@ -29,7 +29,7 @@ import { getMessageList } from "@/api";
 import { relative } from "@/utils";
 import { usePagging } from "@/utils/hooks/usePagging";
 
-const { query, page, fetch, list } = usePagging({
+const { query, page, fetch, list, done } = usePagging({
   fetch: getMessageList,
 });
 
@@ -42,6 +42,7 @@ onMounted(() => {
 });
 
 useReachBottom(() => {
+  if (done.value) return
   page.value++;
 });
 

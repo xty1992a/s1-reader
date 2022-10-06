@@ -27,4 +27,6 @@ export interface Config {
   isSuccess: (res: any) => boolean;
   fmtData: (data: any) => any;
   message: (data: any) => string;
+  // 是否更新cookie
+  acceptCookie: boolean
 }

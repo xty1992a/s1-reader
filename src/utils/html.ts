@@ -26,3 +26,15 @@ export function parseForumHtml(str: string) {
     return [];
   }
 }
+
+export const exactMessage = (str: string) => {
+  try{
+    const $ = cheerio.load(str)
+    const p = $('#messagetext p')
+    p.find('script')
+      .remove()
+    return p.text()
+  }catch (e) {
+    return '解析失败！'
+  }
+}

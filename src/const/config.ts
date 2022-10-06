@@ -22,6 +22,7 @@ export const favoritePath = "/subpack/favorite/index";
 export const messagePath = "/subpack/message/index";
 export const postDetailPath = "/subpack/post-detail/index";
 export const forumPath = "/subpack/forum/index";
+export const historyPath = "/subpack/history/index";
 
 export const tabbarList = tabbarArray.map((it) => ({
   pagePath: it.pagePath,

@@ -1,6 +1,6 @@
 import Taro from "@tarojs/taro";
 import * as path from "@/const/config";
-import { forumPath } from "@/const/config";
+import {forumPath, historyPath} from "@/const/config";
 
 export function getParams(dft: Record<string, string> = {}) {
   return Taro?.getCurrentInstance()?.router?.params ?? dft;
@@ -28,4 +28,8 @@ export function routeToForum(id: string) {
 
 export function routeToFavorite(id: string) {
   return Taro.navigateTo({ url: path.favoritePath });
+}
+
+export function routeToHistory(id: string) {
+  return Taro.navigateTo({ url: path.historyPath });
 }

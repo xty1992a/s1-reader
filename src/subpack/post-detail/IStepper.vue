@@ -21,7 +21,10 @@
         </p>
         <p class="pagging-btn" @click="pick('size')">{{ props.size }}</p>
       </div>
-      <!--    <div></div>-->
+        <div>
+          <slot name="right"></slot>
+<!--          <nut-icon class="favorite" name="star" @click="toggleFavorite"/>-->
+        </div>
     </div>
     <nut-picker
       style="height: 200px"

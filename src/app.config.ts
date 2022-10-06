@@ -11,6 +11,7 @@ export default defineAppConfig({
         "message/index",
         "forum/index",
         "setting/index",
+        "history/index"
       ],
     },
   ],

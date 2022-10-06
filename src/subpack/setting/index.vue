@@ -1,53 +1,53 @@
 <template>
   <IPage>
     <view class="setting-page">
-      <view class="form" v-if="formData">
-        <nut-form :model-value="formData" ref="ruleForm">
+      <view class="form">
+        <nut-form v-if="themeForm" :model-value="themeForm">
           <nut-collapse
-            v-model:active="activeModule"
+            v-model:active="activeModule.theme"
             icon="down-arrow"
             :accordion="true"
           >
             <nut-collapse-item title="颜色" name="color">
               <nut-form-item label="背景颜色" prop="bgColor">
                 <IColor
-                  v-model="formData.bgColor"
+                  v-model="themeForm.bgColor"
                   @click="pickColorBy('bgColor')"
                 />
               </nut-form-item>
               <nut-form-item label="背景颜色(深)" prop="bgColorDarken">
                 <IColor
-                  v-model="formData.bgColorDarken"
+                  v-model="themeForm.bgColorDarken"
                   @click="pickColorBy('bgColorDarken')"
                 />
               </nut-form-item>
               <nut-form-item label="字体颜色" prop="fontColor">
                 <IColor
-                  v-model="formData.fontColor"
+                  v-model="themeForm.fontColor"
                   @click="pickColorBy('fontColor')"
                 />
               </nut-form-item>
               <nut-form-item label="边框颜色" prop="borderColor">
                 <IColor
-                  v-model="formData.borderColor"
+                  v-model="themeForm.borderColor"
                   @click="pickColorBy('borderColor')"
                 />
               </nut-form-item>
               <nut-form-item label="引用边框颜色" prop="quoteBorderColor">
                 <IColor
-                  v-model="formData.quoteBorderColor"
+                  v-model="themeForm.quoteBorderColor"
                   @click="pickColorBy('quoteBorderColor')"
                 />
               </nut-form-item>
               <nut-form-item label="引用背景颜色" prop="quoteBorderColor">
                 <IColor
-                  v-model="formData.quoteBgColor"
+                  v-model="themeForm.quoteBgColor"
                   @click="pickColorBy('quoteBgColor')"
                 />
               </nut-form-item>
               <nut-form-item label="激活颜色" prop="activeColor">
                 <IColor
-                  v-model="formData.activeColor"
+                  v-model="themeForm.activeColor"
                   @click="pickColorBy('activeColor')"
                 />
               </nut-form-item>
@@ -55,25 +55,36 @@
 
             <nut-collapse-item title="尺寸" name="size">
               <nut-form-item label="页边距" prop="pagePadding">
-                <nut-inputnumber v-model.number="formData.pagePadding" />
+                <nut-inputnumber v-model.number="themeForm.pagePadding" />
               </nut-form-item>
               <nut-form-item label="卡片内边距" prop="cardPadding">
-                <nut-inputnumber v-model.number="formData.cardPadding" />
+                <nut-inputnumber v-model.number="themeForm.cardPadding" />
               </nut-form-item>
               <nut-form-item label="卡片底边距" prop="cardMarginBottom">
-                <nut-inputnumber v-model.number="formData.cardMarginBottom" />
+                <nut-inputnumber v-model.number="themeForm.cardMarginBottom" />
               </nut-form-item>
             </nut-collapse-item>
 
             <nut-collapse-item title="字号" name="fontsize">
               <nut-form-item label="正文" prop="fontSizeNormal">
-                <nut-inputnumber v-model.number="formData.fontSizeNormal" />
+                <nut-inputnumber v-model.number="themeForm.fontSizeNormal" />
               </nut-form-item>
               <nut-form-item label="次级" prop="fontSizeSmall">
-                <nut-inputnumber v-model.number="formData.fontSizeSmall" />
+                <nut-inputnumber v-model.number="themeForm.fontSizeSmall" />
               </nut-form-item>
               <nut-form-item label="轻量" prop="fontSizeMini">
-                <nut-inputnumber v-model.number="formData.fontSizeMini" />
+                <nut-inputnumber v-model.number="themeForm.fontSizeMini" />
+              </nut-form-item>
+            </nut-collapse-item>
+
+          </nut-collapse>
+        </nut-form>
+
+        <nut-form v-if="systemForm" :model-value="systemForm">
+          <nut-collapse v-model:active="activeModule.theme" :accordion="true" icon="down-arrow">
+            <nut-collapse-item title="系统" name="system">
+              <nut-form-item label="在看数量" prop="readCount">
+                <nut-inputnumber v-model.number="readMaxCount"/>
               </nut-form-item>
             </nut-collapse-item>
           </nut-collapse>
@@ -96,22 +107,29 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import { reactive, ref, onBeforeMount, computed, watch } from "vue";
-import { useTheme } from "@/store";
+import {ref, computed, watch, toRefs, reactive} from "vue";
+import { useTheme, useSystem } from "@/store";
 import { theme } from "@/types";
 import ColorPicker from "@/components/color-picker/ColorPicker.vue";
-import IColor from "./IColor";
+import IColor from "./IColor.vue";
 import { useColor } from "@/components/color-picker/hooks";
 
 const themeStore = useTheme();
-
+const systemStore = useSystem()
 const [pickColor] = useColor("setting");
 
-const ruleForm = ref(null);
-const formData = computed(() => themeStore.config);
+const themeForm = computed(() => themeStore.config);
+const systemForm = computed(() => systemStore.config);
+
+const readMaxCount = computed({
+  get: () => systemStore.config.readCount,
+  set: v => {
+    systemStore.setReadCount(v)
+  }
+})
 
 watch(
-  formData,
+  themeForm,
   () => {
     themeStore.save();
   },
@@ -119,18 +137,21 @@ watch(
 );
 
 const pickColorBy = async (prop: keyof theme.ThemeConfig) => {
-  const color = formData.value[prop];
+  const color = themeForm.value[prop];
   if (typeof color !== "string") return;
   const res = await pickColor(color as string);
   if (!res.success) return;
-  formData.value[prop] = res.color;
+  themeForm.value[prop] = res.color;
 };
 
 const reset = () => {
   themeStore.reset();
 };
 
-const activeModule = ref("");
+const activeModule = reactive({
+  theme: '',
+  system: ''
+});
 </script>
 
 <style lang="less">

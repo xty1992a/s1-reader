@@ -15,7 +15,7 @@ export const useTheme = defineStore("theme", {
   state() {
     return {
       // 驼峰格式的主题色配置
-      config: storage.get("theme.config"),
+      config: storage.get("theme.config") as theme.ThemeConfig,
       mode: "", // 'dark'
     };
   },

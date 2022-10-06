@@ -25,7 +25,7 @@ import {
   Radio,
   RadioGroup,
   Checkbox,
-  CheckboxGroup,
+  CheckboxGroup, Switch,
 } from "@nutui/nutui-taro";
 import local from "./local";
 const list = [
@@ -55,6 +55,7 @@ const list = [
   RadioGroup,
   Checkbox,
   CheckboxGroup,
+  Switch,
 ];
 function useNut(app: App) {
   list.forEach((comp) => app.use(comp));

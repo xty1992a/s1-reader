@@ -1,26 +1,29 @@
 import {defineStore} from "pinia";
 import {storage} from "@/utils";
 
+interface Config {readCount: number, usePushNext: boolean}
+
+const dftConfig= {
+  mk(): Config {
+    return {
+      readCount: 10,
+      usePushNext: false
+    }
+  }
+}
+
 export const useSystem = defineStore('system', {
   state() {
     return {
-      config: (storage.get('system:config') || {
-        readCount: 10
-      }) as {readCount: number}
+      config: (storage.get('system:config') || dftConfig.mk()) as {readCount: number, usePushNext: boolean}
     }
   },
   actions: {
-    setReadCount(v) {
-      this.config.readCount = v
-      this.save()
-    },
     save() {
       storage.set('system:config', this.config)
     },
     restore() {
-      this.config = storage.get('system:config') || {
-        readCount: 10
-      }
+      this.config = storage.get('system:config') || dftConfig.mk()
     }
   },
   getters: {

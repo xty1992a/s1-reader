@@ -84,7 +84,10 @@
           <nut-collapse v-model:active="activeModule.theme" :accordion="true" icon="down-arrow">
             <nut-collapse-item title="系统" name="system">
               <nut-form-item label="在看数量" prop="readCount">
-                <nut-inputnumber v-model.number="readMaxCount"/>
+                <nut-inputnumber v-model.number="systemForm.readCount"/>
+              </nut-form-item>
+              <nut-form-item label="上拉下一页" prop="usePushNext">
+                <nut-switch v-model="systemForm.usePushNext"/>
               </nut-form-item>
             </nut-collapse-item>
           </nut-collapse>
@@ -121,20 +124,9 @@ const [pickColor] = useColor("setting");
 const themeForm = computed(() => themeStore.config);
 const systemForm = computed(() => systemStore.config);
 
-const readMaxCount = computed({
-  get: () => systemStore.config.readCount,
-  set: v => {
-    systemStore.setReadCount(v)
-  }
-})
+watch(systemForm, () => systemStore.save(), {deep: true})
 
-watch(
-  themeForm,
-  () => {
-    themeStore.save();
-  },
-  { deep: true }
-);
+watch(  themeForm,  () => themeStore.save(),  { deep: true });
 
 const pickColorBy = async (prop: keyof theme.ThemeConfig) => {
   const color = themeForm.value[prop];

@@ -4,6 +4,7 @@ export const sleep = (time) =>
   new Promise((resolve) => setTimeout(resolve, time));
 export const limit = (min: number, max: number) => (value) =>
   Math.max(Math.min(max, value), min);
+export const rdm = () =>  Math.random().toString(36).substr(2, 15);
 export const copy = (o) => JSON.parse(JSON.stringify(o));
 // 不能有的
 const excludes = [/^max-age=/i, /^path=/i, /^expires=/i];

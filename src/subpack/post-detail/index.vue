@@ -6,10 +6,11 @@
           <view>{{ message }}</view>
         </view>
 
-        <view v-for="it in state.comments" :key="it.pid">
+        <view class="card" v-for="it in state.comments" :key="it.pid">
           <ICard :data="it" />
         </view>
       </view>
+      <view class="bottom-holder"/>
     </view>
     <div class="footer safe-area-inset-bottom">
       <IStepper v-model:current="page" v-model:size="size" :total="total" >
@@ -19,6 +20,7 @@
 
       </IStepper>
     </div>
+    <view class="push-up"  :id="pushToken"/>
   </IPage>
 </template>
 
@@ -31,19 +33,16 @@ export default {
 <script setup lang="ts">
 //# region 引用、类型
 import {
-  ref,
   reactive,
   onMounted,
   onUnmounted,
   watch,
   computed,
-  nextTick,
 } from "vue";
 import { getParams, routeToHome } from "@/utils";
+import {useSystem} from '@/store'
 import {
-  useReachBottom,
   usePullDownRefresh,
-  useTitleClick,
 } from "@tarojs/taro";
 import * as api from "@/api";
 import type { forum } from "@/types";
@@ -51,9 +50,10 @@ import Taro from "@tarojs/taro";
 import { storage, sleep } from "@/utils";
 import uniqBy from "lodash/uniqBy";
 import IStepper from "./IStepper.vue";
-import ICard from "./ICard";
+import ICard from "./ICard.vue";
 import { useScrollEnd } from "@/utils/hooks/useScrollEnd";
 import {addFavoriteThread} from "@/api";
+import {usePushUp} from "@/utils/hooks/usePushUp";
 
 interface State {
   comments: forum.PostItem[];
@@ -71,7 +71,8 @@ interface State {
 
 //# endregion
 
-//# region 数据
+//# region 数据、状态
+const system = useSystem()
 const dftQuery = {
   tid: "",
   page: 1,
@@ -97,8 +98,10 @@ const message = computed(() => {
   if (state.comments.length) return "";
   return state.message?.messagestr ?? "";
 });
+const commentsLength = computed(() => state.comments.length)
 const query = computed(() => state.query);
 const total = computed(() => Number(state.thread?.replies) ?? 0);
+const pages = computed(() => Math.ceil(total.value / query.value.size))
 const page = computed({
   get: () => state.query.page,
   set: (v) => {
@@ -216,6 +219,7 @@ useReachBottom(() => {
 });
 */
 
+// 初始化
 onMounted(() => {
   scrollTop = 0;
   const params = getParams();
@@ -228,12 +232,36 @@ onMounted(() => {
   remember(params.tid);
 });
 
+//# region 上一页、下一页、刷新
+// 上拉，下一页
+const [pushToken, enablePushUp] = usePushUp(() => {
+  if (!system.config.usePushNext) return // 这个功能不是很稳，给个开关控制
+  console.log('列表数量', )
+  if (pages.value > page.value) { // 非最后一页，就下一页
+    page.value++
+    return;
+  }
+  // 否则刷新
+  reset({ page: query.value.page });
+})
+// 页面高度动态，可能导致第一次异常，等数据回来后再开启
+watch(commentsLength, (now, old) => {
+  if (!now) return
+  enablePushUp(true)
+})
+
+// 下拉，上一页
 usePullDownRefresh(async () => {
   pulldown = true;
+  if (query.value.page > 1) {
+    page.value--
+    return
+  }
   reset({ page: query.value.page });
 });
 //# endregion
 
+//# region 快照
 useScrollEnd((pos) => {
   scrollTop = pos.scrollTop;
   snapshot();
@@ -241,6 +269,9 @@ useScrollEnd((pos) => {
 onUnmounted(() => {
   snapshot();
 });
+//# endregion
+
+//# endregion
 //# region 页面定义
 definePageConfig({
   navigationBarTitleText: "",
@@ -252,7 +283,16 @@ definePageConfig({
 
 <style lang="less">
 .post-detail {
-  padding-bottom: 50px;
+  position: relative;
+  // 扣除最下面的card的底边距
+  padding-bottom: calc(50px - var(--card-margin-bottom, 10px));
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+.push-up{
+  transform: translateY(calc(var(--page-padding) + 100px));
+  height: 10px;
+  background-color: red;
 }
 
 .footer {

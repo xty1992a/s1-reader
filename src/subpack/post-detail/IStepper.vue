@@ -39,7 +39,7 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, computed } from "vue";
+import {reactive, computed, inject, watch} from "vue";
 import { limit } from "@/utils";
 const props = withDefaults(
   defineProps<{
@@ -54,6 +54,7 @@ const props = withDefaults(
   }
 );
 const emits = defineEmits(["update:current", "update:size"]);
+const ipage = inject<any>('__i-page-component')
 
 const state = reactive({
   visible: false,
@@ -140,6 +141,10 @@ const confirm = ({ selectedValue: [value] }) => {
   }
   state.pickType = "";
 };
+
+watch(computed(() => state.visible), (now) => {
+  now ? ipage?.stopPageScroll() : ipage?.enablePageScroll()
+})
 </script>
 
 <style lang="less">

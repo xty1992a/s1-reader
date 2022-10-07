@@ -2,6 +2,16 @@
   <IPage>
     <div class="page-forum">
       <div class="picked">
+
+        <nut-cell-group title="已选" class="picked-block">
+          <SorterContainer style="width: 100%;" class="box-wrap1" @change="onSwap" :list="thread.forumList.map(i => i.fid)">
+            <SorterItem v-for="(it, index) in thread.forumList" :key="it.fid" :index="index" class="box1">
+              <nut-cell :title="it.name" style="margin: 0;"  />
+<!--              {{it.name}}-->
+            </SorterItem>
+          </SorterContainer>
+        </nut-cell-group>
+
         <nut-cell-group title="已选">
           <nut-cell
             v-for="it in thread.forumList"
@@ -49,6 +59,9 @@ import { computed, onMounted, ref } from "vue";
 import { getForumList } from "@/api";
 import { forum } from "@/types";
 import { useThread } from "@/store";
+import SorterContainer from '@/components/sorter/SorterContainer.vue'
+import SorterItem from '@/components/sorter/SorterItem.vue'
+
 const thread = useThread();
 
 const allList = ref<forum.ForumOption[]>([]);
@@ -73,6 +86,9 @@ const delOption = thread.delForum;
 const stepOption = (item: forum.ForumOption, delta: number) => {
   thread.stepForum(item, delta);
 };
+const onSwap = (e) => {
+thread.swapForum(e.source, e.target)
+}
 
 definePageConfig({
   navigationBarTitleText: "版块",
@@ -84,6 +100,24 @@ definePageConfig({
   .set-block {
     .nut-icon {
       margin-left: 15px;
+    }
+  }
+
+  .box-wrap{
+    display: flex;
+    flex-wrap: wrap;
+    .box{
+      width: 100px;
+      height: 100px;
+      background-color: #fff;
+    }
+  }
+
+
+  .picked-block{
+    .nut-cell-group__warp{
+      background-color: var(--bg-color);
+      overflow: visible;
     }
   }
 }

@@ -133,3 +133,46 @@ export function toRgb(color: string) {
 export function toHex(color: string) {
   return tinycolor(color).toHexString();
 }
+
+interface RectOption {
+  width: number
+  height: number
+  top: number
+  left: number
+  index: number
+}
+
+export class Rect {
+  left: number
+  top: number
+  width: number
+  height: number
+  index: number
+
+  constructor(option: RectOption) {
+    Object.assign(this, option);
+  }
+
+  get centerX() {
+    return this.left + this.width / 2;
+  }
+
+  get centerY() {
+    return this.top + this.height / 2;
+  }
+
+  get bottom() {
+    return this.top + this.height;
+  }
+
+  get right() {
+    return this.left + this.width;
+  }
+
+  static hit = (point: {x: number, y: number}, rect: Rect) => {
+    const { x, y } = point;
+    const { left, top, right, bottom } = rect;
+    return !(x < left || x > right || y < top || y > bottom);
+  }
+
+}
